@@ -34,14 +34,16 @@
     },
     "./theme.css": "./dist/styles/theme.css",
     "./tailwind-preset": "./tailwind-preset.js",
-    "./styles.css": "./dist/styles.css"
+    "./styles.css": "./dist/blario.css"
   },
   "files": [
     "dist",
     "tailwind-preset.js",
     "README.md"
   ],
-  "sideEffects": ["**/*.css"],
+  "sideEffects": [
+    "**/*.css"
+  ],
   "scripts": {
     "dev": "tsup --watch",
     "build:css": "postcss src/styles/lib.css -o dist/blario.css",
@@ -108,6 +110,7 @@
     "autoprefixer": "^10.4.21",
     "eslint": "^8.56.0",
     "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-jsx-a11y": "^6.10.2",
     "eslint-plugin-react": "^7.33.2",
     "eslint-plugin-react-hooks": "^4.6.0",
     "happy-dom": "^12.10.3",
@@ -127,10 +130,12 @@
     "typescript": "^5.3.3",
     "vitest": "^1.1.1"
   },
-  "size-limit": [{
-    "path": "dist/index.mjs",
-    "limit": "25 kB"
-  }],
+  "size-limit": [
+    {
+      "path": "dist/index.mjs",
+      "limit": "25 kB"
+    }
+  ],
   "publishConfig": {
     "access": "public"
   }

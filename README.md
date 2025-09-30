@@ -27,22 +27,58 @@ Official JavaScript/TypeScript SDKs for Blar - AI-powered issue diagnostics for 
 
 ## 🚀 Quick Start
 
+### Prerequisites
+
+**Important:** `@blario/nextjs` requires **Tailwind CSS** to be installed and properly configured in your Next.js project.
+
 ### Installation
 
 ```bash
-# Install the alpha version
+# Install the package
 npm install @blario/nextjs@alpha
 
-# Or with yarn
-yarn add @blario/nextjs@alpha
+# You also need Tailwind CSS and tailwindcss-animate
+npm install -D tailwindcss tailwindcss-animate autoprefixer postcss
 
 # Or with pnpm
 pnpm add @blario/nextjs@alpha
+pnpm add -D tailwindcss tailwindcss-animate autoprefixer postcss
 ```
 
 ### Setup (Next.js App Router)
 
-#### 1. Set up environment variables
+#### 1. Configure Tailwind CSS
+
+Update your `tailwind.config.ts` to include the Blario preset and scan the package files:
+
+```ts
+// tailwind.config.ts
+import type { Config } from 'tailwindcss';
+import preset from '@blario/nextjs/tailwind-preset';
+
+const config: Config = {
+  presets: [preset],
+  darkMode: "class",
+  content: [
+    './pages/**/*.{js,ts,jsx,tsx,mdx}',
+    './components/**/*.{js,ts,jsx,tsx,mdx}',
+    './app/**/*.{js,ts,jsx,tsx,mdx}',
+    // ⚠️ REQUIRED: Scan @blario/nextjs for Tailwind classes
+    './node_modules/@blario/nextjs/dist/**/*.{js,ts,jsx,tsx,mjs,cjs}',
+  ],
+  theme: {
+    extend: {
+      // Your custom theme extensions
+    },
+  },
+};
+
+export default config;
+```
+
+**Note:** The content path for `@blario/nextjs` is **required** for the component styles to work properly.
+
+#### 2. Set up environment variables
 
 Create a `.env.local` file:
 
@@ -50,9 +86,9 @@ Create a `.env.local` file:
 NEXT_PUBLIC_BLARIO_PROJECT_ID=your-project-id-here
 ```
 
-#### 2. Create a Client Component wrapper for providers
+#### 3. Create a Client Component wrapper
 
-Since the BlarioProvider uses React Context, it must be wrapped in a Client Component:
+Since BlarioProvider uses React Context, wrap it in a Client Component:
 
 ```tsx
 // app/providers.tsx
@@ -62,17 +98,32 @@ import { BlarioProvider } from '@blario/nextjs';
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
-    <BlarioProvider projectId={process.env.NEXT_PUBLIC_BLARIO_PROJECT_ID!}>
+    <BlarioProvider
+      projectId={process.env.NEXT_PUBLIC_BLARIO_PROJECT_ID!}
+      config={{
+        // Optional: Configure user info
+        user: {
+          id: 'user-123',
+          email: 'user@example.com',
+          name: 'John Doe',
+        },
+        // Optional: Customize theme
+        theme: {
+          position: 'bottom-right', // or 'bottom-left', 'top-right', 'top-left'
+        },
+      }}
+    >
       {children}
     </BlarioProvider>
   );
 }
 ```
 
-#### 3. Add the provider to your root layout
+#### 4. Update your root layout
 
 ```tsx
 // app/layout.tsx
+import './globals.css'; // Your global styles with Tailwind directives
 import { Providers } from './providers';
 import type { Metadata } from 'next';
 
@@ -96,30 +147,36 @@ export default function RootLayout({
 }
 ```
 
-#### 4. Add the components to your pages
-
-```tsx
-// app/page.tsx
-import { IssueReporterButton, DiagnosticBanner } from '@blario/nextjs';
-
-export default function Page() {
-  return (
-    <main>
-      <DiagnosticBanner />
-      <h1>Welcome to your app</h1>
-      {/* Your app content */}
-      <IssueReporterButton />
-    </main>
-  );
-}
-```
-
-#### 5. Import styles (if using Tailwind CSS)
+Ensure your `globals.css` includes Tailwind directives:
 
 ```css
 /* app/globals.css */
-@import '@blario/nextjs/styles';
-/* Your other styles */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+```
+
+#### 5. Add the Issue Reporter Button
+
+```tsx
+// app/page.tsx or any page/component
+import { IssueReporterButton } from '@blario/nextjs';
+
+export default function Page() {
+  return (
+    <div>
+      {/* Your page content */}
+
+      {/* Floating button (appears in corner based on theme.position) */}
+      <IssueReporterButton />
+
+      {/* Or inline button variant */}
+      <IssueReporterButton variant="inline">
+        Report an Issue
+      </IssueReporterButton>
+    </div>
+  );
+}
 ```
 
 ## 🎯 Features
@@ -222,11 +279,25 @@ pnpm link @blario/nextjs
 
 #### Styles Not Loading
 
-**Problem**: Components appear unstyled.
+**Problem**: Components appear unstyled or broken.
 
-**Solution**: Import the styles in your global CSS:
-```css
-@import '@blario/nextjs/styles';
+**Solution**:
+1. Ensure Tailwind CSS is installed and configured
+2. Add the package path to your `tailwind.config.ts` content array:
+```ts
+content: [
+  // ... your app paths
+  './node_modules/@blario/nextjs/dist/**/*.{js,ts,jsx,tsx,mjs,cjs}',
+]
+```
+3. Use the Blario Tailwind preset:
+```ts
+import preset from '@blario/nextjs/tailwind-preset';
+
+const config: Config = {
+  presets: [preset],
+  // ...
+};
 ```
 
 #### TypeScript Errors
