@@ -1,4 +1,53 @@
 @layer base {
+  /* CSS Variables for portal-based components */
+  :root {
+    /* Light mode colors */
+    --blario-background: 0 0% 100%;
+    --blario-foreground: 222.2 84% 4.9%;
+    --blario-card: 0 0% 100%;
+    --blario-card-foreground: 222.2 84% 4.9%;
+    --blario-popover: 0 0% 100%;
+    --blario-popover-foreground: 222.2 84% 4.9%;
+    --blario-primary: 222.2 47.4% 11.2%;
+    --blario-primary-foreground: 210 40% 98%;
+    --blario-secondary: 210 40% 96.1%;
+    --blario-secondary-foreground: 222.2 47.4% 11.2%;
+    --blario-muted: 210 40% 96.1%;
+    --blario-muted-foreground: 215.4 16.3% 46.9%;
+    --blario-accent: 210 40% 96.1%;
+    --blario-accent-foreground: 222.2 47.4% 11.2%;
+    --blario-destructive: 0 84.2% 60.2%;
+    --blario-destructive-foreground: 210 40% 98%;
+    --blario-border: 214.3 31.8% 91.4%;
+    --blario-input: 214.3 31.8% 91.4%;
+    --blario-ring: 222.2 84% 4.9%;
+    --blario-radius: 0.5rem;
+  }
+
+  /* Dark mode support for :root */
+  :root.dark,
+  .dark {
+    --blario-background: 222.2 84% 4.9%;
+    --blario-foreground: 210 40% 98%;
+    --blario-card: 222.2 84% 4.9%;
+    --blario-card-foreground: 210 40% 98%;
+    --blario-popover: 222.2 84% 4.9%;
+    --blario-popover-foreground: 210 40% 98%;
+    --blario-primary: 210 40% 98%;
+    --blario-primary-foreground: 222.2 47.4% 11.2%;
+    --blario-secondary: 217.2 32.6% 17.5%;
+    --blario-secondary-foreground: 210 40% 98%;
+    --blario-muted: 217.2 32.6% 17.5%;
+    --blario-muted-foreground: 215 20.2% 65.1%;
+    --blario-accent: 217.2 32.6% 17.5%;
+    --blario-accent-foreground: 210 40% 98%;
+    --blario-destructive: 0 62.8% 30.6%;
+    --blario-destructive-foreground: 210 40% 98%;
+    --blario-border: 217.2 32.6% 17.5%;
+    --blario-input: 217.2 32.6% 17.5%;
+    --blario-ring: 212.7 26.8% 83.9%;
+  }
+
   /* CSS Variables for the Blario components */
   .blario-wrapper {
   /* Light mode colors */

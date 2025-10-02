@@ -6,6 +6,12 @@ Drop-in issue reporter for Next.js applications with AI-powered diagnostics.
 [![npm downloads](https://img.shields.io/npm/dm/@blario/nextjs.svg)](https://www.npmjs.com/package/@blario/nextjs)
 [![license](https://img.shields.io/npm/l/@blario/nextjs.svg)](https://github.com/blario/support-js/blob/main/LICENSE)
 
+## 📚 Documentation
+
+- **[Styling Guide](./docs/styling.md)** - Complete customization and theming options
+- **[API Reference](./docs/api-reference.md)** - Detailed component and hook documentation
+- **[Examples](./docs/examples.md)** - Real-world integration patterns and use cases
+
 ## Features
 
 ✨ **Drop-in Components** - Pre-built UI components with shadcn/ui
@@ -13,7 +19,7 @@ Drop-in issue reporter for Next.js applications with AI-powered diagnostics.
 📊 **Auto Context Capture** - Automatically collects browser, route, and console data
 🛡️ **Privacy-First** - Built-in PII redaction and consent controls
 📱 **Responsive Design** - Works on all screen sizes
-🎨 **Customizable** - Theme and position options
+🎨 **Fully Customizable** - Complete control over styling and behavior
 ♿ **Accessible** - WCAG 2.1 AA compliant
 🚀 **Performant** - < 25KB gzipped, tree-shakeable
 
@@ -266,7 +272,61 @@ function useErrorHandler() {
 }
 ```
 
-## Theming
+## Styling & Customization
+
+### Complete Control with Unstyled Mode
+
+Remove all default styles for complete control:
+
+```tsx
+<IssueReporterButton
+  variant="inline"
+  unstyled
+  className="your-custom-classes"
+  icon={<YourIcon />}
+>
+  Custom Button
+</IssueReporterButton>
+```
+
+### Seamless Integration Examples
+
+#### Dark Sidebar
+```tsx
+<IssueReporterButton
+  variant="inline"
+  unstyled
+  className="flex w-full items-center gap-2 px-2 py-1.5 text-gray-300 hover:bg-gray-800 rounded"
+  icon={<Bug className="w-5 h-5" />}
+>
+  Report Issue
+</IssueReporterButton>
+```
+
+#### Inline Text Link
+```tsx
+<p>
+  Need help?
+  <IssueReporterButton
+    variant="inline"
+    unstyled
+    hideIcon
+    className="text-blue-600 hover:text-blue-800 underline mx-1"
+  >
+    Contact support
+  </IssueReporterButton>
+</p>
+```
+
+### Button Variants
+
+Use pre-styled button variants when not in unstyled mode:
+
+```tsx
+<IssueReporterButton buttonVariant="ghost" />    // Minimal style
+<IssueReporterButton buttonVariant="outline" />  // Border only
+<IssueReporterButton buttonVariant="default" />  // Primary style
+```
 
 ### Using CSS Variables
 

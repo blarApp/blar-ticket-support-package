@@ -1,17 +1,17 @@
 {
   "name": "@blario/nextjs",
-  "version": "0.1.0-alpha.2",
+  "version": "0.1.0-alpha.5",
   "description": "Drop-in issue reporter for Next.js applications with AI-powered diagnostics",
   "author": "Blario",
   "license": "MIT",
-  "homepage": "https://github.com/blario/support-js",
+  "homepage": "https://github.com/blarApp/blar-ticket-support-package",
   "repository": {
     "type": "git",
-    "url": "https://github.com/blario/support-js.git",
+    "url": "git+https://github.com/blarApp/blar-ticket-support-package.git",
     "directory": "packages/nextjs"
   },
   "bugs": {
-    "url": "https://github.com/blario/support-js/issues"
+    "url": "https://github.com/blarApp/blar-ticket-support-package/issues"
   },
   "keywords": [
     "blario",
