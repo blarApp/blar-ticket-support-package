@@ -207,16 +207,15 @@ export function BlarioProvider({
 
       onAfterSubmit?.(issueId);
 
-      // Diagnostic will be returned from the API directly
-      // No need to poll anymore
-      return null;
+      // Return the issue ID so uploads can be attached
+      return { issueId, status: 'pending' as const, diagnostic: undefined };
     } catch (error) {
       const err = error instanceof Error ? error : new Error('Failed to submit issue');
       onError?.(err);
       throw err;
     } finally {
       setIsSubmitting(false);
-      closeReporter();
+      // Don't close reporter here - let the modal handle it after uploads
     }
   };
 

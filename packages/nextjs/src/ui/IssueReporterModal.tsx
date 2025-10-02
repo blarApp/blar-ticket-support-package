@@ -37,6 +37,7 @@ export function IssueReporterModal({
     isUploading,
     uploadError,
     clearUploadError,
+    uploadProgress,
   } = useBlarioUpload();
 
   const { isModalOpen, closeReporter, reporterOptions } = useBlarioContext();
@@ -91,12 +92,15 @@ export function IssueReporterModal({
     };
 
     try {
+      // submitIssueWithUploads now properly waits for the entire upload process
       const result = await submitIssueWithUploads(issueData, files);
 
       if (result?.issueId) {
         onSuccess?.(result.issueId);
         form.reset();
         setFiles([]);
+        // Close modal after successful submission and upload
+        closeReporter();
       }
     } catch (error) {
       const err = error instanceof Error ? error : new Error('Failed to submit issue');
@@ -257,6 +261,10 @@ export function IssueReporterModal({
                         </p>
                         <p className="text-xs text-muted-foreground">
                           {formatFileSize(file.size)}
+                          {uploadProgress.find(p => p.fileName === file.name)?.status === 'verifying' &&
+                            ' • Verifying...'}
+                          {uploadProgress.find(p => p.fileName === file.name)?.status === 'completed' &&
+                            ' • ✓ Verified'}
                         </p>
                       </div>
                     </div>
@@ -297,7 +305,12 @@ export function IssueReporterModal({
             Cancel
           </Button>
           <Button type="submit" disabled={isSubmitting || isUploading}>
-            {isSubmitting ? 'Submitting...' : isUploading ? 'Uploading Files...' : 'Submit Issue'}
+            {isSubmitting && !isUploading ? 'Creating Issue...' :
+             isUploading ? (
+               uploadProgress.some(p => p.status === 'verifying') ? 'Verifying Attachments...' :
+               uploadProgress.some(p => p.status === 'uploading') ? 'Uploading Files...' :
+               'Preparing Upload...'
+             ) : 'Submit Issue'}
           </Button>
         </div>
         </form>

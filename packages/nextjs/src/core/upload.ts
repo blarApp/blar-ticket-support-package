@@ -60,9 +60,58 @@ export class UploadManager {
   }
 
   /**
-   * Upload files to GCS using signed URLs
+   * Upload files and attach to issue (complete 3-step process)
+   *
+   * This performs the complete upload process:
+   * - Step 1: Get signed URLs from backend (with issue ID)
+   * - Step 2: Upload files directly to GCS
+   * - Step 3: Verify attachments are linked to issue
    */
-  async uploadFiles(files: File[]): Promise<string[]> {
+  async uploadFilesForIssue(
+    files: File[],
+    issueId: string,
+    onProgress?: (step: 'preparing' | 'uploading' | 'verifying' | 'complete', percent?: number) => void
+  ): Promise<string[]> {
+    console.log('uploadFilesForIssue called with issueId:', issueId, 'files:', files.length);
+
+    if (!files || files.length === 0) {
+      return [];
+    }
+
+    // Validate files
+    this.validateFiles(files);
+
+    // Step 1: Get signed URLs from backend with issue ID
+    console.log('Step 1: Preparing uploads for issue:', issueId);
+    onProgress?.('preparing');
+    const uploadConfigs = await this.prepareUploads(files, issueId);
+    console.log('Got upload configs:', uploadConfigs);
+
+    // Step 2: Upload each file directly to GCS
+    onProgress?.('uploading', 0);
+    const uploadTokens = await this.performUploads(files, uploadConfigs);
+    onProgress?.('uploading', 100);
+
+    // Step 3: Verify attachments are properly linked to the issue
+    onProgress?.('verifying');
+    const verificationResult = await this.verifyAttachments(issueId, uploadTokens);
+
+    if (!verificationResult.success) {
+      throw new Error('Failed to verify attachments. Files may not be properly linked to the issue.');
+    }
+
+    onProgress?.('complete');
+    return uploadTokens;
+  }
+
+  /**
+   * Upload files to GCS using signed URLs with progress callback
+   * @deprecated Use uploadFilesForIssue instead for the complete flow
+   */
+  async uploadFiles(
+    files: File[],
+    onProgress?: (step: 'preparing' | 'uploading' | 'complete', percent?: number) => void
+  ): Promise<string[]> {
     if (!files || files.length === 0) {
       return [];
     }
@@ -71,18 +120,23 @@ export class UploadManager {
     this.validateFiles(files);
 
     // Step 1: Get signed URLs from backend
+    onProgress?.('preparing');
     const uploadConfigs = await this.prepareUploads(files);
 
     // Step 2: Upload each file directly to GCS
+    onProgress?.('uploading', 0);
     const uploadTokens = await this.performUploads(files, uploadConfigs);
+    onProgress?.('uploading', 100);
 
+    // Note: Step 3 (verification) needs to happen with issue ID
+    onProgress?.('complete');
     return uploadTokens;
   }
 
   /**
    * Prepare uploads by getting signed URLs from backend
    */
-  private async prepareUploads(files: File[]): Promise<UploadConfig[]> {
+  private async prepareUploads(files: File[], issueId?: string): Promise<UploadConfig[]> {
     const fileMetadata: FileMetadata[] = files.map((file) => ({
       name: file.name,
       type: file.type,
@@ -90,6 +144,11 @@ export class UploadManager {
     }));
 
     const config = this.apiClient.getConfig();
+
+    const body: any = { files: fileMetadata };
+    if (issueId) {
+      body.issue_id = issueId;
+    }
 
     const response = await fetch(
       `${config.apiBaseUrl}/api/support/attachments/prepare`,
@@ -100,7 +159,7 @@ export class UploadManager {
           'X-Project-Id': config.projectId,
           'X-Publishable-Key': config.publishableKey,
         },
-        body: JSON.stringify({ files: fileMetadata }),
+        body: JSON.stringify(body),
       }
     );
 
@@ -221,7 +280,8 @@ export class UploadManager {
   }
 
   /**
-   * Verify that attachments were uploaded successfully
+   * Verify that attachments were uploaded successfully and link to issue
+   * This is Step 3 of the upload process - happens after issue creation
    */
   async verifyAttachments(issueId: string, uploadTokens: string[]): Promise<VerifyAttachmentsResponse> {
     const config = this.apiClient.getConfig();
