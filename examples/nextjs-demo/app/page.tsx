@@ -1,10 +1,8 @@
 import Link from 'next/link';
-import { ClientIssueReporterButton, ClientDiagnosticBanner } from '@/components/ClientComponents';
 
 export default function Home() {
   return (
     <main className="min-h-screen p-8">
-      <ClientDiagnosticBanner position="top" autoHide autoHideDelay={15000} />
 
       <div className="max-w-4xl mx-auto">
         <h1 className="text-4xl font-bold mb-8">
@@ -60,6 +58,16 @@ export default function Home() {
               Test different button styles and positions
             </p>
           </Link>
+
+          <Link
+            href="/demo-dashboard"
+            className="p-6 border-2 border-blue-500 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 transition"
+          >
+            <h2 className="text-xl font-semibold mb-2">🚀 Live Dashboard Demo</h2>
+            <p className="text-gray-600 dark:text-gray-400">
+              Interactive e-commerce dashboard with guided tours (no data-tour-id required!)
+            </p>
+          </Link>
         </div>
 
         <div className="bg-blue-50 dark:bg-blue-900/20 p-6 rounded-lg">
@@ -73,7 +81,6 @@ export default function Home() {
         </div>
       </div>
 
-      <ClientIssueReporterButton />
     </main>
   );
 }
