@@ -3,7 +3,6 @@ import { IssueReportPayloadSchema } from './schemas';
 
 export interface ApiClientConfig {
   apiBaseUrl: string;
-  projectId: string;
   publishableKey: string;
   maxRetries?: number;
   retryDelayMs?: number;
@@ -57,7 +56,6 @@ export class ApiClient {
         signal: this.abortController.signal,
         headers: {
           'Content-Type': 'application/json',
-          'X-Project-Id': this.config.projectId,
           'X-Publishable-Key': this.config.publishableKey,
           ...this.config.headers,
           ...options.headers,

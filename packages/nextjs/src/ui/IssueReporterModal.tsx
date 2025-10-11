@@ -17,6 +17,7 @@ import {
   DialogDescription,
 } from './components/dialog';
 import type { FormData } from '../core/schemas';
+import { translations } from './translations';
 
 export interface IssueReporterModalProps {
   onSuccess?: (issueId: string) => void;
@@ -40,7 +41,8 @@ export function IssueReporterModal({
     uploadProgress,
   } = useBlarioUpload();
 
-  const { isModalOpen, closeReporter, reporterOptions } = useBlarioContext();
+  const { isModalOpen, closeReporter, reporterOptions, locale } = useBlarioContext();
+  const t = translations[locale];
 
   const [files, setFiles] = useState<File[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -120,27 +122,32 @@ export function IssueReporterModal({
     return `${value.toFixed(unitIndex === 0 ? 0 : 2)} ${sizeUnits[unitIndex]}`;
   };
 
+  const handleCloseModal = () => {
+    clearUploadError();
+    closeReporter();
+  };
+
   return (
     <div className="blario-wrapper">
-      <Dialog open={isModalOpen} onOpenChange={(open) => !open && closeReporter()}>
+      <Dialog open={isModalOpen} onOpenChange={(open) => !open && handleCloseModal()}>
         <DialogContent className="blario-wrapper max-w-2xl">
           <DialogHeader>
-            <DialogTitle>Report an Issue</DialogTitle>
+            <DialogTitle>{t.title}</DialogTitle>
             <DialogDescription>
-              Help us improve by reporting any issues you encounter
+              {t.description}
             </DialogDescription>
           </DialogHeader>
 
         <form onSubmit={handleSubmit} className={className}>
-      <div className="space-y-4">
+      <div className="space-y-6">
         <div className="space-y-2">
           <Label htmlFor="summary">
-            Summary <span className="text-destructive">*</span>
+            {t.summary} <span className="text-destructive">{t.required}</span>
           </Label>
           <Input
             id="summary"
             name="summary"
-            placeholder="Brief description of the issue"
+            placeholder={t.summaryPlaceholder}
             defaultValue={reporterOptions?.prefill?.summary}
             required
             disabled={isSubmitting || isUploading}
@@ -148,24 +155,25 @@ export function IssueReporterModal({
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="steps">Steps to Reproduce</Label>
+          <Label htmlFor="steps">{t.steps}</Label>
           <Textarea
             id="steps"
             name="steps"
-            placeholder="1. Go to...&#10;2. Click on...&#10;3. See error"
+            placeholder={t.stepsPlaceholder}
             defaultValue={reporterOptions?.prefill?.steps}
             rows={4}
             disabled={isSubmitting || isUploading}
+            data-tour-id="issue-description-input"
           />
         </div>
 
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-2">
-            <Label htmlFor="expected">Expected Behavior</Label>
+            <Label htmlFor="expected">{t.expected}</Label>
             <Textarea
               id="expected"
               name="expected"
-              placeholder="What should happen?"
+              placeholder={t.expectedPlaceholder}
               defaultValue={reporterOptions?.prefill?.expected}
               rows={3}
               disabled={isSubmitting || isUploading}
@@ -173,11 +181,11 @@ export function IssueReporterModal({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="actual">Actual Behavior</Label>
+            <Label htmlFor="actual">{t.actual}</Label>
             <Textarea
               id="actual"
               name="actual"
-              placeholder="What actually happened?"
+              placeholder={t.actualPlaceholder}
               defaultValue={reporterOptions?.prefill?.actual}
               rows={3}
               disabled={isSubmitting || isUploading}
@@ -187,26 +195,26 @@ export function IssueReporterModal({
 
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-2">
-            <Label htmlFor="severity">Severity</Label>
+            <Label htmlFor="severity">{t.severity}</Label>
             <Select name="severity" defaultValue={reporterOptions?.prefill?.severity} disabled={isSubmitting || isUploading}>
               <SelectTrigger id="severity">
-                <SelectValue placeholder="Select severity" />
+                <SelectValue placeholder={t.severityPlaceholder} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="low">Low</SelectItem>
-                <SelectItem value="medium">Medium</SelectItem>
-                <SelectItem value="high">High</SelectItem>
-                <SelectItem value="critical">Critical</SelectItem>
+                <SelectItem value="low">{t.severityLow}</SelectItem>
+                <SelectItem value="medium">{t.severityMedium}</SelectItem>
+                <SelectItem value="high">{t.severityHigh}</SelectItem>
+                <SelectItem value="critical">{t.severityCritical}</SelectItem>
               </SelectContent>
             </Select>
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="category">Category</Label>
+            <Label htmlFor="category">{t.category}</Label>
             <Input
               id="category"
               name="category"
-              placeholder="e.g., UI, Performance, API"
+              placeholder={t.categoryPlaceholder}
               defaultValue={reporterOptions?.category || reporterOptions?.prefill?.category}
               disabled={isSubmitting || isUploading}
             />
@@ -214,14 +222,14 @@ export function IssueReporterModal({
         </div>
 
         <div className="space-y-3">
-          <Label>Attachments</Label>
+          <Label>{t.attachments}</Label>
           <div className="rounded-xl border border-dashed border-muted/40 bg-muted/10 p-6 text-center transition-colors hover:border-muted/60">
             <Upload className="mx-auto mb-3 h-10 w-10 text-muted-foreground" />
             <p className="mb-1 text-sm font-medium text-muted-foreground">
-              Drag and drop files here, or click to browse
+              {t.dragDrop}
             </p>
             <p className="mb-4 text-xs text-muted-foreground">
-              Supports images and videos up to 5MB/50MB • Max 3 files
+              {t.fileSupport}
             </p>
             <Input
               type="file"
@@ -238,14 +246,14 @@ export function IssueReporterModal({
               className="mx-auto inline-flex items-center gap-2"
               onClick={() => document.getElementById('file-upload')?.click()}
             >
-              Choose Files
+              {t.chooseFiles}
             </Button>
           </div>
 
           {files.length > 0 && (
             <div className="space-y-2">
               <p className="text-sm font-medium text-foreground">
-                Uploaded files ({files.length})
+                {t.uploadedFiles} ({files.length})
               </p>
               <div className="space-y-2 rounded-lg border border-muted/40 bg-card p-2">
                 {files.map((file, index) => (
@@ -262,9 +270,9 @@ export function IssueReporterModal({
                         <p className="text-xs text-muted-foreground">
                           {formatFileSize(file.size)}
                           {uploadProgress.find(p => p.fileName === file.name)?.status === 'verifying' &&
-                            ' • Verifying...'}
+                            ` • ${t.verifying}`}
                           {uploadProgress.find(p => p.fileName === file.name)?.status === 'completed' &&
-                            ' • ✓ Verified'}
+                            ` • ${t.verified}`}
                         </p>
                       </div>
                     </div>
@@ -291,26 +299,22 @@ export function IssueReporterModal({
           )}
         </div>
 
-        <div className="flex justify-end gap-3">
+        <div className="flex justify-end gap-3 pt-1">
           <Button
             type="button"
             variant="outline"
-            onClick={() => {
-              setFiles([]);
-              clearUploadError();
-              closeReporter();
-            }}
+            onClick={handleCloseModal}
             disabled={isSubmitting || isUploading}
           >
-            Cancel
+            {t.cancel}
           </Button>
-          <Button type="submit" disabled={isSubmitting || isUploading}>
-            {isSubmitting && !isUploading ? 'Creating Issue...' :
+          <Button type="submit" disabled={isSubmitting || isUploading} data-tour-id="issue-submit-button">
+            {isSubmitting && !isUploading ? t.creatingIssue :
              isUploading ? (
-               uploadProgress.some(p => p.status === 'verifying') ? 'Verifying Attachments...' :
-               uploadProgress.some(p => p.status === 'uploading') ? 'Uploading Files...' :
-               'Preparing Upload...'
-             ) : 'Submit Issue'}
+               uploadProgress.some(p => p.status === 'verifying') ? t.verifyingAttachments :
+               uploadProgress.some(p => p.status === 'uploading') ? t.uploadingFiles :
+               t.preparingUpload
+             ) : t.submit}
           </Button>
         </div>
         </form>

@@ -21,6 +21,28 @@ export type { DiagnosticBannerProps } from './ui/DiagnosticBanner';
 export { withBlarioErrorBoundary, BlarioErrorBoundary } from './errors/withBlarioErrorBoundary';
 export type { ErrorBoundaryProps, ErrorFallbackProps } from './errors/withBlarioErrorBoundary';
 
+// Tour and Chat exports
+export { TourProvider, useTour } from './tour/TourProvider';
+export type { TourContextValue, TourProviderProps } from './tour/TourProvider';
+
+export { ChatWidget } from './chat/ChatWidget';
+export type { ChatWidgetProps } from './chat/ChatWidget';
+
+export { chatAPI } from './chat/chatAPI';
+export type { ChatAPIRequest } from './chat/chatAPI';
+
+export { withTour } from './tour/elementFinder';
+export { waitForElement, waitForPageReady, waitForNavigation } from './tour/elementWaiter';
+
+export type {
+  Tour,
+  TourStep,
+  TourTarget,
+  TourStepPosition,
+  ChatMessage,
+  ChatAssistantResponse,
+} from './tour/types';
+
 export type {
   User,
   Viewport,

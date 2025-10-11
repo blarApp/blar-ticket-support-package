@@ -29,15 +29,16 @@ export interface BlarioContextValue {
   submitIssue: (formData: any) => Promise<DiagnosticResponse | null>;
   clearDiagnostic: () => void;
   user?: User;
+  locale: 'en' | 'es';
 }
 
 const BlarioContext = createContext<BlarioContextValue | null>(null);
 
 export interface BlarioProviderProps {
-  projectId: string;
   publishableKey: string;
   apiBaseUrl?: string;
   user?: User;
+  locale?: 'en' | 'es';
   capture?: {
     console?: boolean;
     networkSample?: boolean;
@@ -64,10 +65,10 @@ export interface BlarioProviderProps {
 }
 
 export function BlarioProvider({
-  projectId,
   publishableKey,
   apiBaseUrl = 'https://api.blar.io',
   user,
+  locale = 'en',
   capture = {},
   theme = {},
   redaction = {},
@@ -97,7 +98,6 @@ export function BlarioProvider({
   const storageManagerRef = useRef(getStorageManager());
   const apiClientRef = useRef(getApiClient({
     apiBaseUrl,
-    projectId,
     publishableKey,
   }));
 
@@ -193,7 +193,6 @@ export function BlarioProvider({
       const { attachments, ...formFields } = formData;
 
       const payload = {
-        projectId,
         publishableKey,
         user,
         meta: captureManager.getCaptureMeta(),
@@ -228,10 +227,10 @@ export function BlarioProvider({
 
   const config: BlarioConfig = useMemo(
     () => ({
-      projectId,
       publishableKey,
       apiBaseUrl,
       user,
+      locale,
       capture: {
         console: capture.console ?? true,
         networkSample: capture.networkSample ?? false,
@@ -253,10 +252,10 @@ export function BlarioProvider({
       onError,
     }),
     [
-      projectId,
       publishableKey,
       apiBaseUrl,
       user,
+      locale,
       capture,
       theme,
       redaction,
@@ -277,6 +276,7 @@ export function BlarioProvider({
     submitIssue,
     clearDiagnostic,
     user,
+    locale,
   };
 
   return (
