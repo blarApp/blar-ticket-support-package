@@ -54,7 +54,7 @@ export const AttachmentSchema = z.object({
 });
 
 export const IssueReportPayloadSchema = z.object({
-  projectId: z.string(),
+  publishableKey: z.string(),
   user: UserSchema.optional(),
   meta: MetaSchema,
   console: z.array(ConsoleLogSchema).optional(),
@@ -83,10 +83,10 @@ export const DiagnosticResponseSchema = z.object({
 });
 
 export const BlarioConfigSchema = z.object({
-  projectId: z.string(),
   publishableKey: z.string(),
   apiBaseUrl: z.string().default('https://api.blar.io'),
   user: UserSchema.optional(),
+  locale: z.enum(['en', 'es']).default('en'),
   capture: z.object({
     console: z.boolean().default(true),
     networkSample: z.boolean().default(false),

@@ -1,9 +1,9 @@
 'use client';
 
-import { BlarioProvider } from '@blario/nextjs';
+import { BlarioProvider, TourProvider, ChatWidget } from '@blario/nextjs';
 import { useEffect, useState } from 'react';
 
-export function Providers({ children }: { children: React.ReactNode }) {
+export function Providers({ children }: { children: React.ReactNode | React.ReactNode[] }) {
   const [theme, setTheme] = useState<'light' | 'dark'>('light');
 
   // Listen for theme changes from localStorage or system preference
@@ -31,9 +31,9 @@ export function Providers({ children }: { children: React.ReactNode }) {
 
   return (
     <BlarioProvider
-      projectId={process.env.NEXT_PUBLIC_BLARIO_PROJECT_ID!}
       publishableKey={process.env.NEXT_PUBLIC_BLARIO_PUBLISHABLE_KEY!}
       apiBaseUrl="http://localhost:8000"
+      locale="es"
       user={{
         id: 'demo-user-123',
         email: 'demo@example.com',
@@ -55,7 +55,10 @@ export function Providers({ children }: { children: React.ReactNode }) {
         console.error('Blario error:', error);
       }}
     >
-      {children}
+      <TourProvider>
+        {children}
+        <ChatWidget />
+      </TourProvider>
     </BlarioProvider>
   );
 }

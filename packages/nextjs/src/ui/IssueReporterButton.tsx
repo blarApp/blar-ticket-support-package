@@ -165,6 +165,7 @@ export function IssueReporterButton({
         onClick={handleClick}
         className={cn(baseClasses, className)}
         aria-label={ariaLabel}
+        data-tour-id="issue-reporter-button"
       >
         <ButtonContent {...contentProps} />
       </button>
@@ -180,13 +181,14 @@ export function IssueReporterButton({
         aria-label={ariaLabel}
         variant={buttonVariant}
         size={buttonSize}
+        data-tour-id="issue-reporter-button"
       >
         <ButtonContent {...contentProps} />
       </Button>
     );
   }
 
-  // Floating styled button
+  // Floating styled button - icon only by default
   return (
     <Button
       onClick={handleClick}
@@ -199,8 +201,9 @@ export function IssueReporterButton({
       size={buttonSize || 'icon'}
       variant={buttonVariant}
       aria-label={ariaLabel}
+      data-tour-id="issue-reporter-button"
     >
-      <ButtonContent {...contentProps} />
+      <ButtonContent {...contentProps} hideText={hideText === undefined ? true : hideText} />
     </Button>
   );
 }
