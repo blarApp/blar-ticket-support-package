@@ -68,7 +68,7 @@ export function ChatWidget({ position = 'bottom-right', className }: ChatWidgetP
       // Using mock API for demo - replace with real API:
       // const response = await chatAPI({
       //   message: inputValue,
-      //   projectId: config.projectId,
+      //   publishableKey: config.publishableKey,
       //   currentUrl: window.location.href
       // });
       const response = await mockChatAPI(inputValue);

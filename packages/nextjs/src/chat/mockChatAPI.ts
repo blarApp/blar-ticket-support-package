@@ -33,7 +33,6 @@ export async function mockChatAPI(userMessage: string): Promise<ChatAssistantRes
   //   headers: { 'Content-Type': 'application/json' },
   //   body: JSON.stringify({
   //     message: userMessage,
-  //     projectId: 'your-project-id',
   //     currentUrl: window.location.href
   //   }),
   // });
@@ -346,12 +345,13 @@ export async function mockChatAPI(userMessage: string): Promise<ChatAssistantRes
   // Integration-specific tours
   if (messageLower.includes('integrate') || messageLower.includes('integration') || messageLower.includes('connect app')) {
     return {
-      message: "I'll walk you through connecting a new app integration in 8 easy steps! This works for any third-party service.",
+      message: "I'll walk you through connecting a new app integration in 7 easy steps! This works for any third-party service.",
       tour: {
         id: 'integration-walkthrough',
         steps: [
           {
             target: {
+              selector: 'a[href="/demo-dashboard/integrations"]',
               text: 'Integrations',
             },
             title: 'Step 1: Navigate to Integrations',
@@ -360,25 +360,18 @@ export async function mockChatAPI(userMessage: string): Promise<ChatAssistantRes
           },
           {
             target: {
-              text: 'Available Integrations',
-            },
-            title: 'Step 2: Browse Available Apps',
-            description: 'Scroll down to see all available integrations. You can connect with popular services like Mailchimp, Slack, and more.',
-            position: 'top',
-          },
-          {
-            target: {
               text: 'Mailchimp',
             },
-            title: 'Step 3: Select an Integration',
+            title: 'Step 2: Select an Integration',
             description: 'Let\'s connect Mailchimp for email marketing. You can choose any app that fits your needs.',
             position: 'top',
           },
           {
             target: {
               text: 'Connect',
+              context: 'Mailchimp',
             },
-            title: 'Step 4: Click Connect',
+            title: 'Step 3: Click Connect',
             description: 'Click the "Connect" button on the integration card to start the connection process.',
             position: 'top',
           },
@@ -386,7 +379,7 @@ export async function mockChatAPI(userMessage: string): Promise<ChatAssistantRes
             target: {
               selector: 'input[placeholder="Enter your API key"]',
             },
-            title: 'Step 5: Enter API Key',
+            title: 'Step 4: Enter API Key',
             description: 'Enter your API key from the third-party service. You can find this in your account settings on their platform.',
             position: 'top',
           },
@@ -394,7 +387,7 @@ export async function mockChatAPI(userMessage: string): Promise<ChatAssistantRes
             target: {
               selector: 'input[placeholder*="workspace"]',
             },
-            title: 'Step 6: Add Workspace URL',
+            title: 'Step 5: Add Workspace URL',
             description: 'Provide your workspace or organization URL if required by the integration.',
             position: 'top',
           },
@@ -402,7 +395,7 @@ export async function mockChatAPI(userMessage: string): Promise<ChatAssistantRes
             target: {
               selector: 'input[type="checkbox"]',
             },
-            title: 'Step 7: Configure Sync Settings',
+            title: 'Step 6: Configure Sync Settings',
             description: 'Choose whether to automatically sync data. This keeps your information up-to-date across both platforms.',
             position: 'left',
           },
@@ -410,7 +403,7 @@ export async function mockChatAPI(userMessage: string): Promise<ChatAssistantRes
             target: {
               text: 'Connect Integration',
             },
-            title: 'Step 8: Complete Connection',
+            title: 'Step 7: Complete Connection',
             description: 'Click "Connect Integration" to finalize the setup. The app will now appear in your Connected Integrations!',
             position: 'top',
           },
@@ -425,12 +418,13 @@ export async function mockChatAPI(userMessage: string): Promise<ChatAssistantRes
     (messageLower.includes('integrate') && messageLower.includes('mail'))
   ) {
     return {
-      message: "I'll show you exactly how to connect Mailchimp for email marketing in 8 easy steps!",
+      message: "I'll show you exactly how to connect Mailchimp for email marketing in 7 easy steps!",
       tour: {
         id: 'mailchimp-integration',
         steps: [
           {
             target: {
+              selector: 'a[href="/demo-dashboard/integrations"]',
               text: 'Integrations',
             },
             title: 'Step 1: Navigate to Integrations',
@@ -439,25 +433,18 @@ export async function mockChatAPI(userMessage: string): Promise<ChatAssistantRes
           },
           {
             target: {
-              text: 'Available Integrations',
-            },
-            title: 'Step 2: Find Available Apps',
-            description: 'Scroll down to see all available integrations you can connect.',
-            position: 'top',
-          },
-          {
-            target: {
               text: 'Mailchimp',
             },
-            title: 'Step 3: Locate Mailchimp',
+            title: 'Step 2: Locate Mailchimp',
             description: 'Find the Mailchimp card in the Available Integrations section. It has a yellow icon.',
             position: 'top',
           },
           {
             target: {
               text: 'Connect',
+              context: 'Mailchimp',
             },
-            title: 'Step 4: Click Connect',
+            title: 'Step 3: Click Connect',
             description: 'Click the "Connect" button on the Mailchimp card to start the integration process.',
             position: 'top',
           },
@@ -465,7 +452,7 @@ export async function mockChatAPI(userMessage: string): Promise<ChatAssistantRes
             target: {
               selector: 'input[placeholder="Enter your API key"]',
             },
-            title: 'Step 5: Enter API Key',
+            title: 'Step 4: Enter API Key',
             description: 'Enter your Mailchimp API key. You can find this in your Mailchimp account under Account > Extras > API keys.',
             position: 'top',
           },
@@ -473,7 +460,7 @@ export async function mockChatAPI(userMessage: string): Promise<ChatAssistantRes
             target: {
               selector: 'input[placeholder*="workspace"]',
             },
-            title: 'Step 6: Add Workspace URL',
+            title: 'Step 5: Add Workspace URL',
             description: 'Enter your Mailchimp workspace URL (e.g., https://us1.admin.mailchimp.com)',
             position: 'top',
           },
@@ -481,7 +468,7 @@ export async function mockChatAPI(userMessage: string): Promise<ChatAssistantRes
             target: {
               selector: 'input[type="checkbox"]',
             },
-            title: 'Step 7: Enable Auto-Sync',
+            title: 'Step 6: Enable Auto-Sync',
             description: 'Check this box to automatically sync your customer data with Mailchimp every hour.',
             position: 'left',
           },
@@ -489,7 +476,7 @@ export async function mockChatAPI(userMessage: string): Promise<ChatAssistantRes
             target: {
               text: 'Connect Integration',
             },
-            title: 'Step 8: Complete Setup',
+            title: 'Step 7: Complete Setup',
             description: 'Click "Connect Integration" to finalize. Mailchimp will now sync with your customer data!',
             position: 'top',
           },
@@ -577,11 +564,11 @@ export async function mockChatAPI(userMessage: string): Promise<ChatAssistantRes
 /**
  * In a real implementation, this would be:
  *
- * export async function chatAPI(userMessage: string, projectId: string): Promise<ChatAssistantResponse> {
+ * export async function chatAPI(userMessage: string, publishableKey: string): Promise<ChatAssistantResponse> {
  *   const response = await fetch('/api/chat/ask', {
  *     method: 'POST',
  *     headers: { 'Content-Type': 'application/json' },
- *     body: JSON.stringify({ message: userMessage, projectId }),
+ *     body: JSON.stringify({ message: userMessage, publishableKey }),
  *   });
  *
  *   return response.json();

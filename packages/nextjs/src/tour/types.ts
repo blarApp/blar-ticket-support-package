@@ -3,6 +3,7 @@ export interface TourTarget {
   selector?: string;
   text?: string;
   index?: number;
+  context?: string; // Optional context text to help narrow down element matching (e.g., parent element text)
 }
 
 export type TourStepPosition = 'top' | 'bottom' | 'left' | 'right' | 'center';

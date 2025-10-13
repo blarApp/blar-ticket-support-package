@@ -83,7 +83,7 @@ export default config;
 Create a `.env.local` file:
 
 ```bash
-NEXT_PUBLIC_BLARIO_PROJECT_ID=your-project-id-here
+NEXT_PUBLIC_BLARIO_PUBLISHABLE_KEY=your-publishable-key-here
 ```
 
 #### 3. Create a Client Component wrapper
@@ -99,7 +99,7 @@ import { BlarioProvider } from '@blario/nextjs';
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <BlarioProvider
-      projectId={process.env.NEXT_PUBLIC_BLARIO_PROJECT_ID!}
+      publishableKey={process.env.NEXT_PUBLIC_BLARIO_PUBLISHABLE_KEY!}
       config={{
         // Optional: Configure user info
         user: {
@@ -270,7 +270,7 @@ pnpm link @blario/nextjs
 
 #### Environment Variables Not Working
 
-**Problem**: Getting `undefined` for project ID.
+**Problem**: Getting `undefined` for publishableKey.
 
 **Solution**:
 1. Ensure your env variable starts with `NEXT_PUBLIC_` prefix

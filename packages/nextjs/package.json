@@ -1,6 +1,6 @@
 {
   "name": "@blario/nextjs",
-  "version": "0.1.0-alpha.7",
+  "version": "0.1.0-alpha.8",
   "description": "Drop-in issue reporter for Next.js applications with AI-powered diagnostics",
   "author": "Blario",
   "license": "MIT",
@@ -130,12 +130,10 @@
     "typescript": "^5.3.3",
     "vitest": "^1.1.1"
   },
-  "size-limit": [
-    {
-      "path": "dist/index.mjs",
-      "limit": "25 kB"
-    }
-  ],
+  "size-limit": [{
+    "path": "dist/index.mjs",
+    "limit": "25 kB"
+  }],
   "publishConfig": {
     "access": "public"
   }

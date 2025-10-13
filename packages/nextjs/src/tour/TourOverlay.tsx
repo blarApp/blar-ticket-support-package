@@ -63,7 +63,7 @@ export function TourOverlay({
 
       // Wait for element to appear (with retry logic)
       const result = await waitForElement(step.target, {
-        timeout: 10000, // Wait up to 10 seconds for element
+        timeout: 30000, // Wait up to 30 seconds for element (allows time for user to navigate)
         retryInterval: 100,
         waitForNavigation: true,
       });
@@ -109,7 +109,7 @@ export function TourOverlay({
 
   const calculateTooltipPosition = (rect: DOMRect, preferredPosition: string) => {
     const tooltipWidth = 320;
-    const tooltipHeight = 200; // Approximate
+    const tooltipHeight = 280; // Increased to account for actual height
     const padding = 16;
     const arrowSize = 12;
 
@@ -117,6 +117,32 @@ export function TourOverlay({
     let left = 0;
     let position: 'top' | 'bottom' | 'left' | 'right' = 'bottom';
 
+    const viewportWidth = window.innerWidth;
+    const viewportHeight = window.innerHeight;
+
+    // Helper function to check if tooltip would overlap with highlighted element
+    const wouldOverlap = (t: number, l: number) => {
+      const tooltipRect = {
+        top: t,
+        left: l,
+        right: l + tooltipWidth,
+        bottom: t + tooltipHeight,
+      };
+      const highlightRect = {
+        top: rect.top - 8,
+        left: rect.left - 8,
+        right: rect.right + 8,
+        bottom: rect.bottom + 8,
+      };
+      return !(
+        tooltipRect.right < highlightRect.left ||
+        tooltipRect.left > highlightRect.right ||
+        tooltipRect.bottom < highlightRect.top ||
+        tooltipRect.top > highlightRect.bottom
+      );
+    };
+
+    // Try preferred position first
     switch (preferredPosition) {
       case 'top':
         top = rect.top - tooltipHeight - arrowSize - padding;
@@ -145,20 +171,60 @@ export function TourOverlay({
     }
 
     // Keep tooltip within viewport bounds
-    const viewportWidth = window.innerWidth;
-    const viewportHeight = window.innerHeight;
-
     if (left + tooltipWidth > viewportWidth - padding) {
       left = viewportWidth - tooltipWidth - padding;
     }
     if (left < padding) {
       left = padding;
     }
-    if (top + tooltipHeight > viewportHeight - padding) {
-      top = viewportHeight - tooltipHeight - padding;
-    }
-    if (top < padding) {
-      top = padding;
+
+    // If tooltip would go off screen or overlap, try alternative positions
+    if (top + tooltipHeight > viewportHeight - padding || top < padding || wouldOverlap(top, left)) {
+      // Try positions in order of preference
+      const alternatives: Array<{ pos: 'top' | 'bottom' | 'left' | 'right'; t: number; l: number }> = [
+        {
+          pos: 'top',
+          t: rect.top - tooltipHeight - arrowSize - padding,
+          l: rect.left + rect.width / 2 - tooltipWidth / 2,
+        },
+        {
+          pos: 'bottom',
+          t: rect.bottom + arrowSize + padding,
+          l: rect.left + rect.width / 2 - tooltipWidth / 2,
+        },
+        {
+          pos: 'left',
+          t: rect.top + rect.height / 2 - tooltipHeight / 2,
+          l: rect.left - tooltipWidth - arrowSize - padding,
+        },
+        {
+          pos: 'right',
+          t: rect.top + rect.height / 2 - tooltipHeight / 2,
+          l: rect.right + arrowSize + padding,
+        },
+      ];
+
+      for (const alt of alternatives) {
+        let altLeft = alt.l;
+        // Adjust horizontal position to stay in viewport
+        if (altLeft + tooltipWidth > viewportWidth - padding) {
+          altLeft = viewportWidth - tooltipWidth - padding;
+        }
+        if (altLeft < padding) {
+          altLeft = padding;
+        }
+
+        if (
+          alt.t >= padding &&
+          alt.t + tooltipHeight <= viewportHeight - padding &&
+          !wouldOverlap(alt.t, altLeft)
+        ) {
+          top = alt.t;
+          left = altLeft;
+          position = alt.pos;
+          break;
+        }
+      }
     }
 
     setTooltipPos({ top, left, position });
@@ -168,35 +234,50 @@ export function TourOverlay({
 
   const content = (
     <>
-      {/* SVG Overlay with cutout for the highlighted element */}
+      {/* Overlay with cutout for the highlighted element using 4 divs */}
       {highlightPos && (
-        <svg
-          className="fixed inset-0 z-[9998] pointer-events-none"
-          style={{ width: '100%', height: '100%' }}
-        >
-          <defs>
-            <mask id="tour-highlight-mask">
-              <rect x="0" y="0" width="100%" height="100%" fill="white" />
-              <rect
-                x={highlightPos.left - 8}
-                y={highlightPos.top - 8}
-                width={highlightPos.width + 16}
-                height={highlightPos.height + 16}
-                rx="8"
-                fill="black"
-              />
-            </mask>
-          </defs>
-          <rect
-            x="0"
-            y="0"
-            width="100%"
-            height="100%"
-            fill="rgba(0, 0, 0, 0.5)"
-            mask="url(#tour-highlight-mask)"
-            className="pointer-events-none"
+        <>
+          {/* Top overlay */}
+          <div
+            className="fixed z-[9998] bg-black/50 pointer-events-auto"
+            style={{
+              top: 0,
+              left: 0,
+              width: '100%',
+              height: `${highlightPos.top - 8}px`,
+            }}
           />
-        </svg>
+          {/* Bottom overlay */}
+          <div
+            className="fixed z-[9998] bg-black/50 pointer-events-auto"
+            style={{
+              top: `${highlightPos.top + highlightPos.height + 8}px`,
+              left: 0,
+              width: '100%',
+              height: `calc(100vh - ${highlightPos.top + highlightPos.height + 8}px)`,
+            }}
+          />
+          {/* Left overlay */}
+          <div
+            className="fixed z-[9998] bg-black/50 pointer-events-auto"
+            style={{
+              top: `${highlightPos.top - 8}px`,
+              left: 0,
+              width: `${highlightPos.left - 8}px`,
+              height: `${highlightPos.height + 16}px`,
+            }}
+          />
+          {/* Right overlay */}
+          <div
+            className="fixed z-[9998] bg-black/50 pointer-events-auto"
+            style={{
+              top: `${highlightPos.top - 8}px`,
+              left: `${highlightPos.left + highlightPos.width + 8}px`,
+              width: `calc(100vw - ${highlightPos.left + highlightPos.width + 8}px)`,
+              height: `${highlightPos.height + 16}px`,
+            }}
+          />
+        </>
       )}
 
       {/* Highlight border */}
@@ -230,7 +311,7 @@ export function TourOverlay({
         <Card
           ref={tooltipRef}
           className={cn(
-            "fixed z-[10000] w-80 p-4 shadow-2xl transition-all duration-300",
+            "fixed z-[10000] w-80 p-4 shadow-2xl transition-all duration-300 pointer-events-auto",
             "bg-white dark:bg-gray-900 border-2",
             !tooltipPos && isLoading && "top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
           )}

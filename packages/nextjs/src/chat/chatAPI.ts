@@ -10,7 +10,6 @@ import type { ChatAssistantResponse } from '../tour/types';
  * Request Body:
  * {
  *   message: string;           // User's question
- *   projectId: string;         // Your Blario project ID
  *   currentUrl?: string;       // Current page URL for context
  *   sessionId?: string;        // Session tracking
  * }
@@ -54,7 +53,7 @@ import type { ChatAssistantResponse } from '../tour/types';
 
 export interface ChatAPIRequest {
   message: string;
-  projectId: string;
+  publishableKey: string;
   currentUrl?: string;
   sessionId?: string;
 }
@@ -83,16 +82,16 @@ export async function chatAPI(request: ChatAPIRequest): Promise<ChatAssistantRes
  * Example backend implementation (Node.js/Express):
  *
  * app.post('/api/chat/ask', async (req, res) => {
- *   const { message, projectId, currentUrl } = req.body;
+ *   const { message, publishableKey, currentUrl } = req.body;
  *
  *   // 1. Authenticate project
- *   const project = await getProject(projectId);
+ *   const project = await getProject(publishableKey);
  *
  *   // 2. Use LLM to understand intent
  *   const intent = await analyzeIntent(message); // "user wants to create order"
  *
  *   // 3. Get app structure for this project
- *   const appStructure = await getAppStructure(projectId, currentUrl);
+ *   const appStructure = await getAppStructure(publishableKey, currentUrl);
  *
  *   // 4. Generate tour steps using AI
  *   const tourSteps = await generateTourSteps({

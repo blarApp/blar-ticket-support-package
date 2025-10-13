@@ -26,14 +26,14 @@ export function findTourElement(target: TourTarget): ElementMatch | null {
     }
   }
 
-  // Strategy 2: Try CSS selector
+  // Strategy 2: Try CSS selector with text validation
   if (target.selector) {
     const elements = Array.from(document.querySelectorAll(target.selector)) as HTMLElement[];
 
     if (elements.length === 0) {
       // If selector fails but we have text, try smart text search
       if (target.text) {
-        return findByTextContent(target.text);
+        return findByTextContent(target.text, target.context);
       }
       return null;
     }
@@ -44,6 +44,8 @@ export function findTourElement(target: TourTarget): ElementMatch | null {
       if (matchingElement) {
         return { element: matchingElement, confidence: 'medium' };
       }
+      // If no exact match with selector + text, fall back to text search with context
+      return findByTextContent(target.text, target.context);
     }
 
     // If index is provided, use it
@@ -74,7 +76,7 @@ export function findTourElement(target: TourTarget): ElementMatch | null {
 
   // Strategy 3: If only text is provided, use smart text search
   if (target.text) {
-    return findByTextContent(target.text);
+    return findByTextContent(target.text, target.context);
   }
 
   return null;
@@ -82,9 +84,12 @@ export function findTourElement(target: TourTarget): ElementMatch | null {
 
 /**
  * Smart text-based element finder that searches through common interactive elements
+ * @param text The text to search for
+ * @param context Optional context text to help narrow down the match (e.g., parent element text)
  */
-function findByTextContent(text: string): ElementMatch | null {
+function findByTextContent(text: string, context?: string): ElementMatch | null {
   const normalizedText = text.trim().toLowerCase();
+  const normalizedContext = context?.trim().toLowerCase();
 
   // Search in priority order: buttons, links, headings, then all elements
   const selectors = [
@@ -105,27 +110,74 @@ function findByTextContent(text: string): ElementMatch | null {
     // Try exact match first
     let match = elements.find(el => {
       const elementText = getElementText(el).toLowerCase();
-      return elementText === normalizedText;
+      const isTextMatch = elementText === normalizedText;
+
+      // If context is provided, check if the element or its ancestors contain the context
+      if (isTextMatch && normalizedContext) {
+        return hasContextMatch(el, normalizedContext);
+      }
+
+      return isTextMatch;
     });
 
-    if (match && isInteractiveElement(match)) {
-      return { element: match, confidence: 'medium' };
+    if (match) {
+      // Prefer interactive elements, but return non-interactive ones if found
+      if (isInteractiveElement(match)) {
+        return { element: match, confidence: normalizedContext ? 'high' : 'medium' };
+      }
+      // For non-interactive elements (like headings), still return them but continue searching
+      // in case we find an interactive element with the same text later
+      if (selector === 'h1, h2, h3, h4, h5, h6') {
+        return { element: match, confidence: normalizedContext ? 'high' : 'medium' };
+      }
     }
 
     // Try contains match
     match = elements.find(el => {
       const elementText = getElementText(el).toLowerCase();
-      return elementText.includes(normalizedText) &&
-             // Avoid matching parent elements that contain the text via children
-             getDirectTextContent(el).toLowerCase().includes(normalizedText);
+      const directText = getDirectTextContent(el).toLowerCase();
+      const isTextMatch = elementText.includes(normalizedText) && directText.includes(normalizedText);
+
+      // If context is provided, check if the element or its ancestors contain the context
+      if (isTextMatch && normalizedContext) {
+        return hasContextMatch(el, normalizedContext);
+      }
+
+      return isTextMatch;
     });
 
-    if (match && isInteractiveElement(match)) {
-      return { element: match, confidence: 'low' };
+    if (match) {
+      if (isInteractiveElement(match)) {
+        return { element: match, confidence: normalizedContext ? 'medium' : 'low' };
+      }
+      // For headings with contains match, still return them
+      if (selector === 'h1, h2, h3, h4, h5, h6') {
+        return { element: match, confidence: normalizedContext ? 'medium' : 'low' };
+      }
     }
   }
 
   return null;
+}
+
+/**
+ * Checks if an element or its ancestors contain the context text
+ */
+function hasContextMatch(element: HTMLElement, contextText: string): boolean {
+  let current: HTMLElement | null = element.parentElement;
+  let depth = 0;
+  const maxDepth = 5; // Don't search too far up the tree
+
+  while (current && depth < maxDepth) {
+    const currentText = current.textContent?.toLowerCase() || '';
+    if (currentText.includes(contextText)) {
+      return true;
+    }
+    current = current.parentElement;
+    depth++;
+  }
+
+  return false;
 }
 
 /**

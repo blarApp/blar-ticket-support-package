@@ -156,7 +156,6 @@ export class UploadManager {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-Project-Id': config.projectId,
           'X-Publishable-Key': config.publishableKey,
         },
         body: JSON.stringify(body),
@@ -292,7 +291,6 @@ export class UploadManager {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-Project-Id': config.projectId,
           'X-Publishable-Key': config.publishableKey,
         },
         body: JSON.stringify({

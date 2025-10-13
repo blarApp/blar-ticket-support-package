@@ -61,7 +61,6 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <body>
         <BlarioProvider
-          projectId={process.env.NEXT_PUBLIC_BLARIO_PROJECT_ID!}
           publishableKey={process.env.NEXT_PUBLIC_BLARIO_PUBLISHABLE_KEY!}
         >
           {children}
@@ -99,7 +98,6 @@ The main provider that wraps your application.
 
 ```tsx
 <BlarioProvider
-  projectId="your-project-id"
   publishableKey="your-publishable-key"
   apiBaseUrl="https://api.blar.io" // optional, defaults to production
   user={{
@@ -392,7 +390,6 @@ Use pre-styled button variants when not in unstyled mode:
 
 ```tsx
 <BlarioProvider
-  projectId="your-project-id"
   apiBaseUrl="https://your-api.example.com"
 >
 ```
@@ -457,7 +454,6 @@ export default function RootLayout({ children }) {
     <html>
       <body>
         <BlarioProvider
-          projectId="blar_abc123"
           publishableKey="pk_live_xxx"
         >
           {children}
@@ -492,7 +488,6 @@ export function Providers({ children }) {
 
   return (
     <BlarioProvider
-      projectId="blar_abc123"
       publishableKey="pk_live_xxx"
       user={{
         id: user?.id,
