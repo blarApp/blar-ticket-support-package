@@ -1,0 +1,108 @@
+{
+  "name": "@blario/vue",
+  "version": "0.1.0-alpha.1",
+  "description": "Drop-in issue reporter for Vue applications with AI-powered diagnostics",
+  "author": "Blario",
+  "license": "MIT",
+  "homepage": "https://github.com/blarApp/blar-ticket-support-package",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/blarApp/blar-ticket-support-package.git",
+    "directory": "packages/vue"
+  },
+  "bugs": {
+    "url": "https://github.com/blarApp/blar-ticket-support-package/issues"
+  },
+  "keywords": [
+    "blario",
+    "vue",
+    "vue3",
+    "issue-reporter",
+    "diagnostics",
+    "bug-reporting",
+    "support"
+  ],
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs"
+    },
+    "./theme.css": "./dist/styles/theme.css",
+    "./tailwind-preset": "./tailwind-preset.js",
+    "./styles.css": "./dist/blario.css"
+  },
+  "files": [
+    "dist",
+    "tailwind-preset.js",
+    "README.md"
+  ],
+  "sideEffects": [
+    "**/*.css"
+  ],
+  "scripts": {
+    "dev": "vite build --watch",
+    "build:css": "postcss src/styles/lib.css -o dist/blario.css",
+    "build": "vite build && npm run build:css",
+    "typecheck": "vue-tsc --noEmit",
+    "lint": "eslint src --ext .ts,.vue",
+    "test": "vitest",
+    "test:ui": "vitest --ui",
+    "test:coverage": "vitest run --coverage",
+    "size": "size-limit",
+    "clean": "rm -rf dist"
+  },
+  "peerDependencies": {
+    "vue": ">=3.3.0",
+    "vue-router": ">=4.0.0",
+    "tailwindcss": ">=3.4.0",
+    "tailwindcss-animate": "^1.0.7"
+  },
+  "dependencies": {
+    "@blario/core": "workspace:*",
+    "radix-vue": "^1.9.0",
+    "class-variance-authority": "^0.7.0",
+    "clsx": "^2.1.0",
+    "lucide-vue-next": "^0.309.0",
+    "tailwind-merge": "^2.5.5"
+  },
+  "devDependencies": {
+    "@size-limit/preset-small-lib": "^11.0.1",
+    "@tailwindcss/postcss": "^4.1.13",
+    "@types/node": "^20.10.6",
+    "@vitejs/plugin-vue": "^5.0.0",
+    "@vue/test-utils": "^2.4.0",
+    "autoprefixer": "^10.4.21",
+    "@typescript-eslint/eslint-plugin": "^6.17.0",
+    "@typescript-eslint/parser": "^6.17.0",
+    "eslint": "^8.56.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-vue": "^9.19.0",
+    "happy-dom": "^12.10.3",
+    "postcss": "^8.5.6",
+    "postcss-cli": "^11.0.1",
+    "postcss-prefix-selector": "^2.1.1",
+    "prettier": "^3.1.1",
+    "size-limit": "^11.0.1",
+    "tailwindcss": "^4.1.13",
+    "tailwindcss-animate": "^1.0.7",
+    "typescript": "^5.3.3",
+    "vite": "^5.0.0",
+    "vite-plugin-dts": "^3.7.0",
+    "vitest": "^1.1.1",
+    "vue": "^3.4.0",
+    "vue-router": "^4.2.0",
+    "vue-tsc": "^2.0.0"
+  },
+  "size-limit": [{
+    "path": "dist/index.mjs",
+    "limit": "25 kB"
+  }],
+  "publishConfig": {
+    "access": "public"
+  }
+}

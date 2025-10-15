@@ -1,0 +1,111 @@
+/* No @tailwind directives - only CSS variables and scoped styles */
+
+/* Apply variables to :root for portal-based components */
+:root {
+  /* Light mode colors */
+  --blario-background: 0 0% 100%;
+  --blario-foreground: 240 10% 3.9%;
+  --blario-card: 0 0% 100%;
+  --blario-card-foreground: 240 10% 3.9%;
+  --blario-popover: 0 0% 100%;
+  --blario-popover-foreground: 240 10% 3.9%;
+  --blario-primary: 240 5.9% 10%;
+  --blario-primary-foreground: 0 0% 98%;
+  --blario-secondary: 240 4.8% 95.9%;
+  --blario-secondary-foreground: 240 5.9% 10%;
+  --blario-muted: 240 4.8% 95.9%;
+  --blario-muted-foreground: 240 3.8% 46.1%;
+  --blario-accent: 240 4.8% 95.9%;
+  --blario-accent-foreground: 240 5.9% 10%;
+  --blario-destructive: 0 84.2% 60.2%;
+  --blario-destructive-foreground: 0 0% 98%;
+  --blario-border: 240 5.9% 90%;
+  --blario-input: 240 5.9% 90%;
+  --blario-ring: 240 5.9% 10%;
+  --blario-radius: 0.5rem;
+}
+
+.blario-wrapper {
+  /* Light mode colors */
+  --blario-background: 0 0% 100%;
+  --blario-foreground: 240 10% 3.9%;
+  --blario-card: 0 0% 100%;
+  --blario-card-foreground: 240 10% 3.9%;
+  --blario-popover: 0 0% 100%;
+  --blario-popover-foreground: 240 10% 3.9%;
+  --blario-primary: 240 5.9% 10%;
+  --blario-primary-foreground: 0 0% 98%;
+  --blario-secondary: 240 4.8% 95.9%;
+  --blario-secondary-foreground: 240 5.9% 10%;
+  --blario-muted: 240 4.8% 95.9%;
+  --blario-muted-foreground: 240 3.8% 46.1%;
+  --blario-accent: 240 4.8% 95.9%;
+  --blario-accent-foreground: 240 5.9% 10%;
+  --blario-destructive: 0 84.2% 60.2%;
+  --blario-destructive-foreground: 0 0% 98%;
+  --blario-border: 240 5.9% 90%;
+  --blario-input: 240 5.9% 90%;
+  --blario-ring: 240 5.9% 10%;
+  --blario-radius: 0.5rem;
+}
+
+/* Dark mode support */
+:root.dark {
+  --blario-background: 222.2 84% 4.9%;
+  --blario-foreground: 210 40% 98%;
+  --blario-card: 222.2 84% 4.9%;
+  --blario-card-foreground: 210 40% 98%;
+  --blario-popover: 222.2 84% 4.9%;
+  --blario-popover-foreground: 210 40% 98%;
+  --blario-primary: 210 40% 98%;
+  --blario-primary-foreground: 222.2 47.4% 11.2%;
+  --blario-secondary: 217.2 32.6% 17.5%;
+  --blario-secondary-foreground: 210 40% 98%;
+  --blario-muted: 217.2 32.6% 17.5%;
+  --blario-muted-foreground: 215 20.2% 65.1%;
+  --blario-accent: 217.2 32.6% 17.5%;
+  --blario-accent-foreground: 210 40% 98%;
+  --blario-destructive: 0 62.8% 30.6%;
+  --blario-destructive-foreground: 210 40% 98%;
+  --blario-border: 217.2 32.6% 17.5%;
+  --blario-input: 217.2 32.6% 17.5%;
+  --blario-ring: 212.7 26.8% 83.9%;
+}
+
+.blario-wrapper.dark,
+.dark .blario-wrapper {
+  --blario-background: 222.2 84% 4.9%;
+  --blario-foreground: 210 40% 98%;
+  --blario-card: 222.2 84% 4.9%;
+  --blario-card-foreground: 210 40% 98%;
+  --blario-popover: 222.2 84% 4.9%;
+  --blario-popover-foreground: 210 40% 98%;
+  --blario-primary: 210 40% 98%;
+  --blario-primary-foreground: 222.2 47.4% 11.2%;
+  --blario-secondary: 217.2 32.6% 17.5%;
+  --blario-secondary-foreground: 210 40% 98%;
+  --blario-muted: 217.2 32.6% 17.5%;
+  --blario-muted-foreground: 215 20.2% 65.1%;
+  --blario-accent: 217.2 32.6% 17.5%;
+  --blario-accent-foreground: 210 40% 98%;
+  --blario-destructive: 0 62.8% 30.6%;
+  --blario-destructive-foreground: 210 40% 98%;
+  --blario-border: 217.2 32.6% 17.5%;
+  --blario-input: 217.2 32.6% 17.5%;
+  --blario-ring: 212.7 26.8% 83.9%;
+}
+
+/* High z-index for modal components */
+.blario-wrapper [role="dialog"] {
+  z-index: 10000;
+}
+
+.blario-wrapper [data-radix-popper-content-wrapper] {
+  z-index: 10001;
+}
+
+/* Font smoothing for better text rendering */
+.blario-wrapper {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
