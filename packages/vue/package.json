@@ -20,7 +20,14 @@
     "issue-reporter",
     "diagnostics",
     "bug-reporting",
-    "support"
+    "support",
+    "vuetify",
+    "element-plus",
+    "quasar",
+    "primevue",
+    "framework-agnostic",
+    "no-tailwind",
+    "standalone-css"
   ],
   "type": "module",
   "main": "./dist/index.js",

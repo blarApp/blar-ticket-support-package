@@ -54,11 +54,19 @@ Perfect for projects using Vuetify, Element Plus, Quasar, or any other UI framew
 // src/main.ts
 import { createApp } from 'vue';
 import App from './App.vue';
-import '@blario/vue/styles.css'; // Import complete standalone CSS
+
+// Import your UI framework styles first
+import 'vuetify/styles';
+
+// IMPORTANT: Import Blario styles AFTER your UI framework
+// This ensures Blario styles take precedence over framework CSS resets
+import '@blario/vue/styles.css';
 
 const app = createApp(App);
 app.mount('#app');
 ```
+
+**⚠️ Import Order Matters:** Always import `@blario/vue/styles.css` **after** your UI framework styles (Vuetify, Element Plus, etc.). UI frameworks often include CSS resets that can override spacing and margins. By importing Blario last, its utility classes will take precedence.
 
 That's it! The bundled CSS includes all necessary styles without requiring Tailwind CSS.
 
@@ -894,8 +902,19 @@ npm run dev
 
 **Without Tailwind CSS:**
 - Make sure you've imported `@blario/vue/styles.css` in your main file
+- **IMPORTANT:** Import Blario styles **after** your UI framework styles (Vuetify, Element Plus, etc.)
+  ```ts
+  // ✅ Correct order
+  import 'vuetify/styles';
+  import '@blario/vue/styles.css';
+
+  // ❌ Wrong order
+  import '@blario/vue/styles.css';
+  import 'vuetify/styles'; // This will override Blario styles
+  ```
 - Check that the CSS file is being loaded (inspect network tab in dev tools)
-- Verify no conflicting styles from your UI framework
+- If spacing/margins are not working, verify that Blario styles are loaded after framework styles
+- Some UI frameworks (like Vuetify) use aggressive CSS resets (`* { margin: 0; padding: 0; }`). Blario includes `!important` on critical utilities to override these resets
 
 **With Tailwind CSS:**
 - Make sure you've added the Tailwind preset to `tailwind.config.js`
