@@ -1,5 +1,4 @@
-import type { IssueReportPayload } from './schemas';
-import { IssueReportPayloadSchema } from './schemas';
+import { IssueReportPayloadSchema, type IssueReportPayload } from '../schemas';
 
 export interface ApiClientConfig {
   apiBaseUrl: string;
@@ -133,8 +132,6 @@ export class ApiClient {
     }
   }
 
-
-
   abort(): void {
     this.abortController?.abort();
   }
@@ -155,3 +152,4 @@ export function resetApiClient(): void {
     apiClientInstance = null;
   }
 }
+

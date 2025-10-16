@@ -6,7 +6,7 @@ import { MessageCircle, X, Send, Sparkles } from 'lucide-react';
 import { Button } from '../ui/components/button';
 import { Card } from '../ui/components/card';
 import { Input } from '../ui/components/input';
-import { cn } from '../ui/lib/utils';
+import { cn } from '../lib/cn';
 import type { ChatMessage } from '../tour/types';
 import { useTour } from '../tour/TourProvider';
 import { mockChatAPI } from './mockChatAPI';

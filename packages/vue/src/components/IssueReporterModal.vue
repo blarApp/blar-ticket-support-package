@@ -198,19 +198,11 @@ import type { FormData } from '@blario/core';
 import { translations } from './translations';
 import type { Translation } from './translations';
 
-const hasTranslation = (locale: string): locale is keyof typeof translations =>
-  Object.prototype.hasOwnProperty.call(translations, locale);
-
 const resolveTranslation = (locale?: string): Translation => {
-  if (!locale) {
+  if (!locale || !(locale in translations)) {
     return translations.en;
   }
-
-  if (hasTranslation(locale)) {
-    return translations[locale] ?? translations.en;
-  }
-
-  return translations.en;
+  return translations[locale as keyof typeof translations];
 };
 import Dialog from './ui/Dialog.vue';
 import DialogContent from './ui/DialogContent.vue';

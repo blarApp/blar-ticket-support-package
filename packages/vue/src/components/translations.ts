@@ -106,6 +106,6 @@ const es: Translation = {
   required: '*',
 };
 
-export const translations: Record<string, Translation> = { en, es };
+export const translations = { en, es } as const;
 
 export type Locale = keyof typeof translations;

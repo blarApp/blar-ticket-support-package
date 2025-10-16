@@ -36,7 +36,9 @@ const en = {
   required: '*',
 } as const;
 
-const es: typeof en = {
+type Translation = typeof en;
+
+const es: Translation = {
   title: 'Reportar un Problema',
   description: 'Ayúdanos a mejorar reportando cualquier problema que encuentres',
   summary: 'Resumen',
@@ -74,4 +76,4 @@ const es: typeof en = {
 export const translations = { en, es } as const;
 
 export type Locale = keyof typeof translations;
-export type TranslationKeys = keyof typeof en;
+export type TranslationKeys = keyof Translation;

@@ -17,6 +17,10 @@ export type { UseBlarioUploadReturn, UploadProgress } from './composables/useBla
 // Components
 export { default as IssueReporterButton } from './components/IssueReporterButton.vue';
 export { default as IssueReporterModal } from './components/IssueReporterModal.vue';
+export { default as BlarioProvider } from './components/BlarioProvider.vue';
+export { default as TourProvider } from './components/TourProvider.vue';
+export { default as ChatWidget } from './components/ChatWidget.vue';
+export { default as DiagnosticBanner } from './components/DiagnosticBanner.vue';
 
 // Core schemas and types (re-exported from @blario/core)
 export type {

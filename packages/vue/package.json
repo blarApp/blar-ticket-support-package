@@ -1,6 +1,6 @@
 {
   "name": "@blario/vue",
-  "version": "0.1.0-alpha.1",
+  "version": "0.1.0-alpha.2",
   "description": "Drop-in issue reporter for Vue applications with AI-powered diagnostics",
   "author": "Blario",
   "license": "MIT",
@@ -47,7 +47,8 @@
   "scripts": {
     "dev": "vite build --watch",
     "build:css": "postcss src/styles/lib.css -o dist/blario.css",
-    "build": "vite build && npm run build:css",
+    "build:theme": "mkdir -p dist/styles && cp src/styles/theme.css dist/styles/",
+    "build": "vite build && npm run build:css && npm run build:theme",
     "typecheck": "vue-tsc --noEmit",
     "lint": "eslint src --ext .ts,.vue",
     "test": "vitest",

@@ -122,3 +122,4 @@ export type IssueReportPayload = z.infer<typeof IssueReportPayloadSchema>;
 export type Diagnostic = z.infer<typeof DiagnosticSchema>;
 export type DiagnosticResponse = z.infer<typeof DiagnosticResponseSchema>;
 export type BlarioConfig = z.infer<typeof BlarioConfigSchema>;
+

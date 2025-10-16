@@ -43,19 +43,6 @@ export type {
   ChatAssistantResponse,
 } from './tour/types';
 
-export type {
-  User,
-  Viewport,
-  Meta,
-  ConsoleLog,
-  NetworkLog,
-  FormData,
-  Attachment,
-  IssueReportPayload,
-  Diagnostic,
-  DiagnosticResponse,
-  BlarioConfig,
-} from './core/schemas';
 
 // Export utility functions
 export { cn } from './lib/cn';

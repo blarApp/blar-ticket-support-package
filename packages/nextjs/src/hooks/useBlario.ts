@@ -1,7 +1,7 @@
 'use client';
 
 import { useBlarioContext } from '../provider/BlarioProvider';
-import type { DiagnosticResponse, FormData } from '../core/schemas';
+import type { DiagnosticResponse, FormData } from '@blario/core';
 
 export interface UseBlarioReturn {
   openReporter: (options?: { category?: string; prefill?: Record<string, any> }) => void;

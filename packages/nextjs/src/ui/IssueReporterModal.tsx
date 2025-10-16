@@ -16,7 +16,7 @@ import {
   DialogTitle,
   DialogDescription,
 } from './components/dialog';
-import type { FormData } from '../core/schemas';
+import type { FormData } from '@blario/core';
 import { translations } from './translations';
 
 export interface IssueReporterModalProps {

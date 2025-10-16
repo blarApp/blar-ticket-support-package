@@ -2,9 +2,14 @@ import type { App, Plugin, InjectionKey } from 'vue';
 import type { Router } from 'vue-router';
 import { reactive, readonly } from 'vue';
 import type { BlarioConfig, DiagnosticResponse, User } from '@blario/core';
-import { getCaptureManager, resetCaptureManager } from '@blario/core';
-import { getStorageManager, resetStorageManager } from '@blario/core';
-import { getApiClient, resetApiClient } from '@blario/core';
+import {
+  getCaptureManager,
+  resetCaptureManager,
+  getStorageManager,
+  resetStorageManager,
+  getApiClient,
+  resetApiClient,
+} from '@blario/core';
 
 export interface BlarioPluginOptions {
   publishableKey: string;

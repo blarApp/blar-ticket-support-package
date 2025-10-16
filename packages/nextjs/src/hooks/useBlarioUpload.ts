@@ -2,9 +2,8 @@
 
 import { useState, useCallback } from 'react';
 import { useBlarioContext } from '../provider/BlarioProvider';
-import { getUploadManager } from '../core/upload';
-import { getApiClient } from '../core/api';
-import type { DiagnosticResponse, FormData } from '../core/schemas';
+import { getUploadManager, getApiClient } from '@blario/core';
+import type { DiagnosticResponse, FormData } from '@blario/core';
 
 export interface UploadProgress {
   fileName: string;

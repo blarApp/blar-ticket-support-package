@@ -6,11 +6,29 @@ import {
   ChevronLeftIcon,
   ChevronRightIcon,
 } from 'lucide-react'
-import { DayButton, DayPicker, getDefaultClassNames } from 'react-day-picker'
+import {
+  DayButton,
+  DayPicker,
+  getDefaultClassNames,
+  type ClassNames,
+  type CustomComponents,
+  type Formatters,
+} from 'react-day-picker'
 
-import { cn } from '@/ui/lib/utils'
+import { cn } from '../lib/utils'
 
-import { Button, buttonVariants } from '@/components/ui/button'
+import { Button, buttonVariants } from './button'
+
+type CalendarProps = React.ComponentProps<typeof DayPicker> & {
+  buttonVariant?: React.ComponentProps<typeof Button>['variant']
+}
+
+type CalendarComponents = CustomComponents & {
+  Root?: NonNullable<CustomComponents['Root']>
+  Chevron?: NonNullable<CustomComponents['Chevron']>
+  DayButton?: typeof CalendarDayButton
+  WeekNumber?: NonNullable<CustomComponents['WeekNumber']>
+}
 
 function Calendar({
   className,
@@ -21,9 +39,7 @@ function Calendar({
   formatters,
   components,
   ...props
-}: React.ComponentProps<typeof DayPicker> & {
-  buttonVariant?: React.ComponentProps<typeof Button>['variant']
-}) {
+}: CalendarProps) {
   const defaultClassNames = getDefaultClassNames()
 
   return (
@@ -37,7 +53,7 @@ function Calendar({
       )}
       captionLayout={captionLayout}
       formatters={{
-        formatMonthDropdown: (date) =>
+        formatMonthDropdown: (date: Date) =>
           date.toLocaleString('default', { month: 'short' }),
         ...formatters,
       }}
@@ -126,7 +142,7 @@ function Calendar({
         ...classNames,
       }}
       components={{
-        Root: ({ className, rootRef, ...props }) => {
+        Root: ({ className, rootRef, ...props }: Parameters<NonNullable<CustomComponents['Root']>>[0]) => {
           return (
             <div
               data-slot="calendar"
@@ -136,7 +152,7 @@ function Calendar({
             />
           )
         },
-        Chevron: ({ className, orientation, ...props }) => {
+        Chevron: ({ className, orientation, ...props }: Parameters<NonNullable<CustomComponents['Chevron']>>[0]) => {
           if (orientation === 'left') {
             return (
               <ChevronLeftIcon className={cn('size-4', className)} {...props} />
@@ -157,7 +173,7 @@ function Calendar({
           )
         },
         DayButton: CalendarDayButton,
-        WeekNumber: ({ children, ...props }) => {
+        WeekNumber: ({ children, ...props }: Parameters<NonNullable<CustomComponents['WeekNumber']>>[0]) => {
           return (
             <td {...props}>
               <div className="flex size-(--cell-size) items-center justify-center text-center">

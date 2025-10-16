@@ -1,0 +1,51 @@
+{
+  "name": "@blario/core",
+  "version": "0.1.0-alpha.2",
+  "description": "Shared core logic for Blario SDKs",
+  "author": "Blario",
+  "license": "MIT",
+  "homepage": "https://github.com/blarApp/blar-ticket-support-package",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/blarApp/blar-ticket-support-package.git",
+    "directory": "packages/core"
+  },
+  "bugs": {
+    "url": "https://github.com/blarApp/blar-ticket-support-package/issues"
+  },
+  "keywords": [
+    "blario",
+    "core",
+    "support",
+    "issue-reporter"
+  ],
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "sideEffects": false,
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "tsup": "^8.0.1",
+    "typescript": "^5.3.3"
+  }
+}

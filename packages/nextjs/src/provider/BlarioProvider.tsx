@@ -10,12 +10,17 @@ import {
   ReactNode,
 } from 'react';
 import { usePathname, useSearchParams } from 'next/navigation';
-import type { BlarioConfig, DiagnosticResponse, User } from '../core/schemas';
-import { getCaptureManager, resetCaptureManager } from '../core/capture';
-import { getStorageManager, resetStorageManager } from '../core/storage';
-import { getApiClient, resetApiClient } from '../core/api';
+import type { BlarioConfig, DiagnosticResponse, User } from '@blario/core';
+import {
+  getCaptureManager,
+  resetCaptureManager,
+  getStorageManager,
+  resetStorageManager,
+  getApiClient,
+  resetApiClient,
+} from '@blario/core';
 import { IssueReporterModal } from '../ui/IssueReporterModal';
-import { cn } from '../ui/lib/utils';
+import { cn } from '../lib/cn';
 import '../styles/theme.css';
 
 export interface BlarioContextValue {
