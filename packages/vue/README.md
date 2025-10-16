@@ -30,13 +30,61 @@ pnpm add @blario/vue@alpha
 
 ### Peer Dependencies
 
+**Required:**
 ```bash
-npm install vue@^3.3.0 vue-router@^4.0.0 tailwindcss@^3.4.0 tailwindcss-animate@^1.0.7
+npm install vue@^3.3.0 vue-router@^4.0.0
 ```
 
-## Quick Start (3 minutes)
+**Optional** (only if using Tailwind CSS):
+```bash
+npm install tailwindcss@^3.4.0 tailwindcss-animate@^1.0.7
+```
 
-### 1. Configure Tailwind CSS
+## Setup Options
+
+Blario Vue works with **or without** Tailwind CSS. Choose the setup that fits your project:
+
+### Option 1: Without Tailwind CSS (Recommended for Vuetify, Element Plus, etc.)
+
+Perfect for projects using Vuetify, Element Plus, Quasar, or any other UI framework.
+
+**1. Import Blario Styles:**
+
+```ts
+// src/main.ts
+import { createApp } from 'vue';
+import App from './App.vue';
+import '@blario/vue/styles.css'; // Import complete standalone CSS
+
+const app = createApp(App);
+app.mount('#app');
+```
+
+That's it! The bundled CSS includes all necessary styles without requiring Tailwind CSS.
+
+**2. Customize via CSS Variables (Optional):**
+
+```css
+/* src/style.css */
+:root {
+  --blario-primary: 220 95% 50%;        /* Your primary color in HSL */
+  --blario-primary-foreground: 0 0% 100%;
+  --blario-background: 0 0% 100%;
+  --blario-foreground: 222 84% 5%;
+  --blario-radius: 0.5rem;              /* Border radius */
+}
+
+.dark {
+  --blario-background: 222 84% 5%;
+  --blario-foreground: 210 40% 98%;
+}
+```
+
+### Option 2: With Tailwind CSS (Full Customization)
+
+Perfect if you're already using Tailwind CSS and want deep integration.
+
+**1. Configure Tailwind CSS:**
 
 Add the Blario preset to your `tailwind.config.js`:
 
@@ -56,7 +104,7 @@ export default {
 };
 ```
 
-### 2. Import Blario Styles
+**2. Import Blario Styles:**
 
 ```ts
 // src/main.ts
@@ -76,7 +124,22 @@ Or import in your main CSS file:
 @import '@blario/vue/styles.css';
 ```
 
-### 3. Wrap Your App with BlarioProvider
+**3. Import Tailwind directives in your CSS:**
+
+```css
+/* src/style.css */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import '@blario/vue/theme.css';
+```
+
+## Quick Start (3 minutes)
+
+After completing one of the setup options above, follow these steps:
+
+### 1. Wrap Your App with BlarioProvider
 
 ```vue
 <!-- src/App.vue -->
@@ -121,7 +184,7 @@ const handleError = (error: Error) => {
 </script>
 ```
 
-### 4. Add the Reporter Button
+### 2. Add the Reporter Button
 
 ```vue
 <template>
@@ -513,9 +576,45 @@ Route changes are automatically captured in issue context.
 
 ## Styling & Customization
 
-### Using Tailwind Preset
+Blario provides multiple ways to customize the appearance based on your setup:
 
-The Blario preset includes all necessary styles and theme variables:
+### Without Tailwind CSS
+
+When using the standalone CSS bundle, customize via CSS variables:
+
+```css
+/* Customize theme colors */
+:root {
+  /* Primary brand color (HSL format: hue saturation% lightness%) */
+  --blario-primary: 220 95% 50%;
+  --blario-primary-foreground: 0 0% 100%;
+
+  /* Background colors */
+  --blario-background: 0 0% 100%;
+  --blario-foreground: 222 84% 5%;
+  --blario-card: 0 0% 100%;
+
+  /* UI elements */
+  --blario-border: 214 32% 91%;
+  --blario-input: 214 32% 91%;
+  --blario-radius: 0.5rem;
+
+  /* Semantic colors */
+  --blario-destructive: 0 84% 60%;
+  --blario-muted: 210 40% 96%;
+}
+
+.dark {
+  --blario-background: 222 84% 5%;
+  --blario-foreground: 210 40% 98%;
+  --blario-card: 222 84% 5%;
+  --blario-border: 217 33% 18%;
+}
+```
+
+### With Tailwind CSS
+
+When using Tailwind, the preset includes all necessary styles and theme variables:
 
 ```js
 // tailwind.config.js
@@ -523,6 +622,32 @@ import blarioPreset from '@blario/vue/tailwind-preset';
 
 export default {
   presets: [blarioPreset],
+  content: [
+    './src/**/*.{vue,js,ts}',
+    './node_modules/@blario/vue/dist/**/*.{js,mjs,vue}',
+  ],
+};
+```
+
+Then customize via Tailwind's theme extension:
+
+```js
+// tailwind.config.js
+import blarioPreset from '@blario/vue/tailwind-preset';
+
+export default {
+  presets: [blarioPreset],
+  theme: {
+    extend: {
+      colors: {
+        // Override Blario colors
+        primary: {
+          DEFAULT: 'hsl(220, 95%, 50%)',
+          foreground: 'hsl(0, 0%, 100%)',
+        },
+      },
+    },
+  },
   content: [
     './src/**/*.{vue,js,ts}',
     './node_modules/@blario/vue/dist/**/*.{js,mjs,vue}',
@@ -584,27 +709,31 @@ const isDark = ref(false);
 </script>
 ```
 
-### CSS Variables
+### Unstyled Components
 
-Customize using CSS variables in your main CSS file:
+For complete control, use the `unstyled` prop and bring your own styles:
 
-```css
-:root {
-  --blario-primary: #6366f1;
-  --blario-primary-foreground: #ffffff;
-  --blario-background: #ffffff;
-  --blario-foreground: #0f172a;
-  --blario-border: #e2e8f0;
-  --blario-input: #f1f5f9;
-  --blario-ring: #6366f1;
+```vue
+<template>
+  <IssueReporterButton
+    unstyled
+    class="my-custom-button"
+  >
+    <MyCustomIcon />
+    Report Issue
+  </IssueReporterButton>
+</template>
+
+<style scoped>
+.my-custom-button {
+  /* Your custom styles */
+  background: linear-gradient(to right, #667eea, #764ba2);
+  color: white;
+  padding: 12px 24px;
+  border-radius: 8px;
+  /* ... */
 }
-
-.dark {
-  --blario-background: #0f172a;
-  --blario-foreground: #f1f5f9;
-  --blario-border: #334155;
-  --blario-input: #1e293b;
-}
+</style>
 ```
 
 ## Advanced Configuration
@@ -763,10 +892,16 @@ npm run dev
 
 ### Styles not applying
 
-Make sure you've:
-1. Added the Tailwind preset to `tailwind.config.js`
-2. Included Blario dist files in Tailwind content array
-3. Imported `@blario/vue/styles.css` in your main file
+**Without Tailwind CSS:**
+- Make sure you've imported `@blario/vue/styles.css` in your main file
+- Check that the CSS file is being loaded (inspect network tab in dev tools)
+- Verify no conflicting styles from your UI framework
+
+**With Tailwind CSS:**
+- Make sure you've added the Tailwind preset to `tailwind.config.js`
+- Included Blario dist files in Tailwind content array
+- Imported `@blario/vue/styles.css` in your main file
+- Added Tailwind directives (`@tailwind base/components/utilities`) to your CSS
 
 ### TypeScript errors with import.meta.env
 

@@ -10,9 +10,9 @@
         </DialogHeader>
 
         <form @submit.prevent="handleSubmit" :class="className">
-            <div class="space-y-6">
+            <div>
               <!-- Summary -->
-              <div class="space-y-2">
+              <div class="space-y-3 mb-4">
                 <label for="summary" class="flex items-center gap-2 text-sm leading-none font-medium text-foreground select-none">
                   {{ t.summary }} <span class="text-destructive">{{ t.required }}</span>
                 </label>
@@ -28,7 +28,7 @@
               </div>
 
               <!-- Steps -->
-              <div class="space-y-2">
+              <div class="space-y-3 mb-4">
                 <label for="steps" class="flex items-center gap-2 text-sm leading-none font-medium text-foreground select-none">{{ t.steps }}</label>
                 <textarea
                   id="steps"
@@ -42,8 +42,8 @@
               </div>
 
               <!-- Expected and Actual -->
-              <div class="grid grid-cols-2 gap-4">
-                <div class="space-y-2">
+              <div class="grid grid-cols-2 gap-6 mb-4">
+                <div class="space-y-3">
                   <label for="expected" class="flex items-center gap-2 text-sm leading-none font-medium text-foreground select-none">{{ t.expected }}</label>
                   <textarea
                     id="expected"
@@ -55,7 +55,7 @@
                   />
                 </div>
 
-                <div class="space-y-2">
+                <div class="space-y-3">
                   <label for="actual" class="flex items-center gap-2 text-sm leading-none font-medium text-foreground select-none">{{ t.actual }}</label>
                   <textarea
                     id="actual"
@@ -69,8 +69,8 @@
               </div>
 
               <!-- Severity and Category -->
-              <div class="grid grid-cols-2 gap-4">
-                <div class="space-y-2">
+              <div class="grid grid-cols-2 gap-6 mb-4">
+                <div class="space-y-3">
                   <label for="severity" class="flex items-center gap-2 text-sm leading-none font-medium text-foreground select-none">{{ t.severity }}</label>
                   <select
                     id="severity"
@@ -86,7 +86,7 @@
                   </select>
                 </div>
 
-                <div class="space-y-2">
+                <div class="space-y-3">
                   <label for="category" class="flex items-center gap-2 text-sm leading-none font-medium text-foreground select-none">{{ t.category }}</label>
                   <input
                     id="category"
@@ -100,11 +100,11 @@
               </div>
 
               <!-- File Upload -->
-              <div class="space-y-3 rounded-lg border border-muted/40 bg-muted/5 p-4">
+              <div class="space-y-4">
                 <label class="flex items-center gap-2 text-sm leading-none font-medium text-foreground select-none">{{ t.attachments }}</label>
                 <div
-                  class="rounded-xl border border-dashed border-muted/40 bg-muted/10 p-6 text-center transition-colors hover:border-muted/60"
-                  :class="{ 'border-primary bg-accent': isDragOver }"
+                  class="rounded-lg border-2 border-dashed border-muted/40 bg-muted/5 p-8 text-center transition-colors hover:border-muted/60"
+                  :class="{ 'border-primary bg-accent/20': isDragOver }"
                   @dragover.prevent="handleDragOver"
                   @dragenter.prevent="handleDragOver"
                   @dragleave="handleDragLeave"
@@ -131,9 +131,9 @@
                 </div>
 
                 <!-- File list -->
-                <div v-if="files.length > 0" class="space-y-2">
+                <div v-if="files.length > 0" class="space-y-3 mt-4">
                   <p class="text-sm font-medium text-foreground">{{ t.uploadedFiles }} ({{ files.length }})</p>
-                  <div class="space-y-2 rounded-lg border border-muted/40 bg-card p-2">
+                  <div class="space-y-2 rounded-lg bg-muted/10 p-3">
                     <div
                       v-for="(file, index) in files"
                       :key="`${file.name}-${index}`"
@@ -165,7 +165,7 @@
             </div>
 
             <!-- Actions -->
-            <div class="flex flex-row gap-2 sm:gap-3 pt-4 border-t border-muted justify-end" >
+            <div class="flex flex-row gap-3 sm:gap-4 pt-6 mt-8 border-muted/30 justify-end" >
               <button
                 type="button"
                 class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] border border-input bg-background text-foreground shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-9 px-4 py-2"
