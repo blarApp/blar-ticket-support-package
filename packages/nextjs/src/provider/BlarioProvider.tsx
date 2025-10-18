@@ -2,6 +2,7 @@
 
 import {
   createContext,
+  useCallback,
   useContext,
   useEffect,
   useMemo,
@@ -10,26 +11,47 @@ import {
   ReactNode,
 } from 'react';
 import { usePathname, useSearchParams } from 'next/navigation';
-import type { BlarioConfig, DiagnosticResponse, User } from '../core/schemas';
+import type {
+  BlarioConfig,
+  ChatHistoryMessage,
+  DiagnosticResponse,
+  TriageResponse,
+  TriageSuggestedMeta,
+  User,
+} from '../core/schemas';
 import { getCaptureManager, resetCaptureManager } from '../core/capture';
 import { getStorageManager, resetStorageManager } from '../core/storage';
 import { getApiClient, resetApiClient } from '../core/api';
-import { IssueReporterModal } from '../ui/IssueReporterModal';
 import { cn } from '../ui/lib/utils';
 import '../styles/theme.css';
+import { IssueReporterModal } from '@/ui/IssueReporterModal';
+
+type ReporterPrefill = Record<string, any> | undefined;
+
+export interface ReporterOptions {
+  category?: string;
+  prefill?: ReporterPrefill;
+  chatHistory?: ChatHistoryMessage[];
+  generatedSummary?: string;
+  suggestedMeta?: TriageSuggestedMeta;
+}
+
+export type ReporterOpenOptions = Omit<ReporterOptions, 'generatedSummary' | 'suggestedMeta'>;
 
 export interface BlarioContextValue {
   config: BlarioConfig;
   isModalOpen: boolean;
-  openReporter: (options?: { category?: string; prefill?: Record<string, any> }) => void;
+  openReporter: (options?: ReporterOpenOptions) => void;
   closeReporter: () => void;
-  reporterOptions?: { category?: string; prefill?: Record<string, any> };
+  reporterOptions?: ReporterOptions;
   lastDiagnostic: DiagnosticResponse | null;
   isSubmitting: boolean;
   submitIssue: (formData: any) => Promise<DiagnosticResponse | null>;
   clearDiagnostic: () => void;
   user?: User;
   locale: 'en' | 'es';
+  isGeneratingDescription: boolean;
+  generatePrefillFromMessages: (messages: ChatHistoryMessage[]) => void;
 }
 
 const BlarioContext = createContext<BlarioContextValue | null>(null);
@@ -78,12 +100,10 @@ export function BlarioProvider({
   children,
 }: BlarioProviderProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [reporterOptions, setReporterOptions] = useState<{
-    category?: string;
-    prefill?: Record<string, any>;
-  }>({});
+  const [reporterOptions, setReporterOptions] = useState<ReporterOptions>({});
   const [lastDiagnostic, setLastDiagnostic] = useState<DiagnosticResponse | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isGeneratingDescription, setIsGeneratingDescription] = useState(false);
 
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -100,6 +120,7 @@ export function BlarioProvider({
     apiBaseUrl,
     publishableKey,
   }));
+  const generationRequestIdRef = useRef(0);
 
   const rateLimitRef = useRef({
     requests: [] as number[],
@@ -165,14 +186,86 @@ export function BlarioProvider({
     return true;
   };
 
-  const openReporter = (options: { category?: string; prefill?: Record<string, any> } = {}) => {
-    setReporterOptions(options);
+  const applyTriageResponse = useCallback((response: TriageResponse) => {
+    const { form_data: formData, suggested_meta: suggestedMeta } = response;
+    const normalizedSeverity =
+      typeof formData.severity === 'string' &&
+      ['low', 'medium', 'high', 'critical'].includes(formData.severity as string)
+        ? (formData.severity as 'low' | 'medium' | 'high' | 'critical')
+        : undefined;
+
+    setReporterOptions(prev => ({
+      ...prev,
+      prefill: {
+        ...prev.prefill,
+        summary: formData.summary ?? prev.prefill?.summary,
+        steps: formData.steps ?? formData.description ?? prev.prefill?.steps,
+        severity: normalizedSeverity ?? prev.prefill?.severity,
+        category: formData.category ?? prev.prefill?.category,
+        expected: formData.expected ?? prev.prefill?.expected,
+        actual: formData.actual ?? prev.prefill?.actual,
+      },
+      generatedSummary: formData.summary ?? formData.description ?? prev.generatedSummary,
+      suggestedMeta: suggestedMeta ?? prev.suggestedMeta,
+    }));
+  }, []);
+
+  const generatePrefillFromMessages = useCallback(
+    (messages: ChatHistoryMessage[]) => {
+      if (!messages || messages.length === 0) {
+        return;
+      }
+
+      const apiClient = apiClientRef.current;
+      const requestId = ++generationRequestIdRef.current;
+      setIsGeneratingDescription(true);
+
+      apiClient
+        .generateIssuePrefill(messages)
+        .then(response => {
+          if (generationRequestIdRef.current !== requestId) {
+            return;
+          }
+
+          applyTriageResponse(response);
+        })
+        .catch(error => {
+          const err = error instanceof Error ? error : new Error('Failed to generate issue prefill');
+          console.error('Issue prefill generation failed:', error);
+          onError?.(err);
+        })
+        .finally(() => {
+          if (generationRequestIdRef.current === requestId) {
+            setIsGeneratingDescription(false);
+          }
+        });
+    },
+    [applyTriageResponse, onError]
+  );
+
+  const openReporter = (options: ReporterOpenOptions = {}) => {
+    const normalizedOptions: ReporterOptions = {
+      category: options.category,
+      prefill: options.prefill ? { ...options.prefill } : undefined,
+      chatHistory: options.chatHistory,
+    };
+
+    setReporterOptions(normalizedOptions);
     setIsModalOpen(true);
+
+    if (options.chatHistory && options.chatHistory.length > 0 && !options.prefill?.summary) {
+      generatePrefillFromMessages(options.chatHistory);
+    } else {
+      generationRequestIdRef.current += 1;
+      setIsGeneratingDescription(false);
+    }
   };
 
   const closeReporter = () => {
     setIsModalOpen(false);
+    generationRequestIdRef.current += 1;
     setReporterOptions({});
+    setIsGeneratingDescription(false);
   };
 
   const submitIssue = async (formData: any): Promise<DiagnosticResponse | null> => {
@@ -277,6 +370,8 @@ export function BlarioProvider({
     clearDiagnostic,
     user,
     locale,
+    isGeneratingDescription,
+    generatePrefillFromMessages,
   };
 
   return (
