@@ -63,6 +63,11 @@ Open [http://localhost:3000](http://localhost:3000) to view the demo.
 - Theme customization
 - Banner positioning
 
+### Test AI Triage (`/test-triage`)
+- Provide chat transcripts to the triage endpoint
+- Prefill the modal from a quick summary prompt
+- Inspect metadata returned by the AI helper
+
 ## 🧪 Testing Features
 
 ### Issue Reporter Modal

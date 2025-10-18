@@ -60,6 +60,16 @@ export default function Home() {
           </Link>
 
           <Link
+            href="/test-triage"
+            className="p-6 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-900 transition"
+          >
+            <h2 className="text-xl font-semibold mb-2">Test AI Triage</h2>
+            <p className="text-gray-600 dark:text-gray-400">
+              Try chat-based and manual summaries that auto-prefill the modal
+            </p>
+          </Link>
+
+          <Link
             href="/demo-dashboard"
             className="p-6 border-2 border-blue-500 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 transition"
           >

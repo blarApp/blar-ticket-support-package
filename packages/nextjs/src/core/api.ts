@@ -1,5 +1,11 @@
-import type { IssueReportPayload } from './schemas';
-import { IssueReportPayloadSchema } from './schemas';
+import {
+  IssueReportPayloadSchema,
+  TriageRequestSchema,
+  TriageResponseSchema,
+  type ChatHistoryMessage,
+  type IssueReportPayload,
+  type TriageResponse,
+} from './schemas';
 
 export interface ApiClientConfig {
   apiBaseUrl: string;
@@ -107,7 +113,7 @@ export class ApiClient {
       });
 
       if (!response.ok) {
-        const errorData = await response.json().catch(() => null);
+        const errorData = await response.json().catch(() => null) as { message?: string } | null;
         throw new ApiError(
           errorData?.message ?? `Failed to submit issue: ${response.statusText}`,
           response.status,
@@ -115,7 +121,7 @@ export class ApiClient {
         );
       }
 
-      const data = await response.json();
+      const data = await response.json() as { issueId?: string };
 
       if (!data.issueId) {
         throw new ApiError('Invalid response: missing issueId');
@@ -129,6 +135,52 @@ export class ApiClient {
 
       throw new ApiError(
         error instanceof Error ? error.message : 'Failed to submit issue'
+      );
+    }
+  }
+
+  async generateIssuePrefill(
+    messages: ChatHistoryMessage[]
+  ): Promise<TriageResponse> {
+    const validation = TriageRequestSchema.safeParse({ messages });
+    if (!validation.success) {
+      throw new ApiError('Invalid chat history payload', 400, validation.error.errors);
+    }
+
+    const url = `${this.config.apiBaseUrl}/api/support/triage`;
+
+    try {
+      const response = await this.fetchWithRetry(url, {
+        method: 'POST',
+        body: JSON.stringify(validation.data),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => null) as { message?: string } | null;
+        throw new ApiError(
+          errorData?.message ?? `Failed to generate issue prefill: ${response.statusText}`,
+          response.status,
+          errorData
+        );
+      }
+
+      const data = await response.json() as unknown;
+      const parsed = TriageResponseSchema.safeParse(data);
+
+      if (!parsed.success) {
+        throw new ApiError('Invalid response from triage endpoint', response.status, parsed.error.errors);
+      }
+
+      return parsed.data;
+    } catch (error) {
+      if (error instanceof ApiError) {
+        throw error;
+      }
+
+      throw new ApiError(
+        error instanceof Error
+          ? error.message
+          : 'Failed to generate issue prefill'
       );
     }
   }

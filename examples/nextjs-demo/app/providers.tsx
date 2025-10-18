@@ -1,6 +1,6 @@
 'use client';
 
-import { BlarioProvider, TourProvider, ChatWidget } from '@blario/nextjs';
+import { BlarioProvider } from '@blario/nextjs';
 import { useEffect, useState } from 'react';
 
 export function Providers({ children }: { children: React.ReactNode | React.ReactNode[] }) {
@@ -32,7 +32,7 @@ export function Providers({ children }: { children: React.ReactNode | React.Reac
   return (
     <BlarioProvider
       publishableKey={process.env.NEXT_PUBLIC_BLARIO_PUBLISHABLE_KEY!}
-      apiBaseUrl="http://localhost:8000"
+      apiBaseUrl="http://blar.local"
       locale="es"
       user={{
         id: 'demo-user-123',
@@ -55,10 +55,7 @@ export function Providers({ children }: { children: React.ReactNode | React.Reac
         console.error('Blario error:', error);
       }}
     >
-      <TourProvider>
-        {children}
-        <ChatWidget />
-      </TourProvider>
+      {children}
     </BlarioProvider>
   );
 }

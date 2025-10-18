@@ -16,9 +16,15 @@ export interface UploadConfig {
   headers?: Record<string, string>; // Additional headers required by the signed URL
 }
 
+export interface PrepareUploadsRequest {
+  files: FileMetadata[];
+  issueId?: string;
+}
+
 export interface PrepareUploadsResponse {
   uploads: UploadConfig[];
 }
+
 
 export interface VerifyAttachmentsResponse {
   success: boolean;
@@ -145,9 +151,10 @@ export class UploadManager {
 
     const config = this.apiClient.getConfig();
 
-    const body: any = { files: fileMetadata };
+    const body: PrepareUploadsRequest = { files: fileMetadata };
+
     if (issueId) {
-      body.issue_id = issueId;
+      body.issueId = issueId;
     }
 
     const response = await fetch(
@@ -163,11 +170,11 @@ export class UploadManager {
     );
 
     if (!response.ok) {
-      const error = await response.json().catch(() => ({ message: 'Failed to prepare uploads' }));
-      throw new Error(error.message || `Failed to prepare uploads: ${response.status}`);
+      const error = await response.json().catch(() => ({ message: 'Failed to prepare uploads' })) as { message?: string };
+      throw new Error(error?.message || `Failed to prepare uploads: ${response.status}`);
     }
 
-    const data: PrepareUploadsResponse = await response.json();
+    const data = await response.json() as PrepareUploadsResponse;
     return data.uploads;
   }
 
@@ -306,7 +313,7 @@ export class UploadManager {
       return { success: false, attachments: [] };
     }
 
-    return response.json();
+    return response.json() as Promise<VerifyAttachmentsResponse>;
   }
 
   /**

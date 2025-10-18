@@ -1,7 +1,7 @@
 'use client';
 
 export { BlarioProvider } from './provider/BlarioProvider';
-export type { BlarioProviderProps } from './provider/BlarioProvider';
+export type { BlarioProviderProps, ReporterOptions, ReporterOpenOptions } from './provider/BlarioProvider';
 
 export { useBlario } from './hooks/useBlario';
 export type { UseBlarioReturn } from './hooks/useBlario';
@@ -50,11 +50,15 @@ export type {
   ConsoleLog,
   NetworkLog,
   FormData,
+  ChatHistoryMessage,
   Attachment,
   IssueReportPayload,
   Diagnostic,
   DiagnosticResponse,
   BlarioConfig,
+  TriageFormData,
+  TriageSuggestedMeta,
+  TriageResponse,
 } from './core/schemas';
 
 // Export utility functions
