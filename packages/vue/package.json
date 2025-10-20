@@ -1,7 +1,7 @@
 {
   "name": "@blario/vue",
-  "version": "0.1.0-alpha.2",
-  "description": "Drop-in issue reporter for Vue applications with AI-powered diagnostics",
+  "version": "0.1.0-alpha.6",
+  "description": "Drop-in issue reporter for Vue applications with AI-powered diagnostics. Works with or without Tailwind CSS.",
   "author": "Blario",
   "license": "MIT",
   "homepage": "https://github.com/blarApp/blar-ticket-support-package",
@@ -20,7 +20,14 @@
     "issue-reporter",
     "diagnostics",
     "bug-reporting",
-    "support"
+    "support",
+    "vuetify",
+    "element-plus",
+    "quasar",
+    "primevue",
+    "framework-agnostic",
+    "no-tailwind",
+    "standalone-css"
   ],
   "type": "module",
   "main": "./dist/index.js",
@@ -63,8 +70,16 @@
     "tailwindcss": ">=3.4.0",
     "tailwindcss-animate": "^1.0.7"
   },
+  "peerDependenciesMeta": {
+    "tailwindcss": {
+      "optional": true
+    },
+    "tailwindcss-animate": {
+      "optional": true
+    }
+  },
   "dependencies": {
-    "@blario/core": "workspace:*",
+    "@blario/core": "^0.1.0-alpha.2",
     "radix-vue": "^1.9.0",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",
