@@ -1,5 +1,13 @@
 # @blario/nextjs
 
+## 0.1.2
+
+### Patch Changes
+
+- Add chatHistory prop to IssueReporterButton for AI-powered form prefilling
+- Separate triage data from reporter options for cleaner architecture
+- Improve loading message with "Prefilling your bug report..." text and proper contrast
+
 ## 0.1.1
 
 ### Patch Changes
