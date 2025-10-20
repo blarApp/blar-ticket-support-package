@@ -1,5 +1,11 @@
 # @blario/nextjs
 
+## 0.1.1
+
+### Patch Changes
+
+- f1b26d4: Remove websocket ping messages and fix duplicate connection messages
+
 ## 0.1.0
 
 ### Minor Changes
