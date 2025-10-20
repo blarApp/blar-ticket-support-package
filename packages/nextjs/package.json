@@ -63,7 +63,12 @@
     "tailwindcss": ">=3.4.0",
     "tailwindcss-animate": "^1.0.7",
     "cmdk": ">=1.0.0",
-    "vaul": ">=0.9.4"
+    "vaul": ">=0.9.4",
+    "react-hook-form": ">=7.0.0",
+    "zod": ">=3.0.0",
+    "sonner": ">=1.0.0",
+    "lucide-react": ">=0.300.0",
+    "next-themes": ">=0.2.0"
   },
   "peerDependenciesMeta": {
     "tailwindcss-animate": {
@@ -73,6 +78,21 @@
       "optional": true
     },
     "vaul": {
+      "optional": true
+    },
+    "react-hook-form": {
+      "optional": true
+    },
+    "zod": {
+      "optional": true
+    },
+    "sonner": {
+      "optional": true
+    },
+    "lucide-react": {
+      "optional": true
+    },
+    "next-themes": {
       "optional": true
     }
   },

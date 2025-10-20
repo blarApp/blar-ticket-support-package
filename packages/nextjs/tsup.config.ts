@@ -14,23 +14,23 @@ export default defineConfig({
     'tailwindcss',
     'tailwindcss-animate',
     'cmdk',
-    'vaul'
+    'vaul',
+    'react-hook-form',
+    'zod',
+    'sonner',
+    'lucide-react',
+    'next-themes'
   ],
   noExternal: [
     '@radix-ui/*',
-    'lucide-react',
     'class-variance-authority',
     'tailwind-merge',
     'clsx',
     'embla-carousel-react',
     'input-otp',
     'react-day-picker',
-    'react-hook-form',
     'react-resizable-panels',
-    'recharts',
-    'next-themes',
-    'sonner',
-    'zod'
+    'recharts'
   ],
   treeshake: true,
   splitting: false,
