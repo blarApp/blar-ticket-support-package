@@ -45,6 +45,7 @@ export function IssueReporterModal({
     isModalOpen,
     closeReporter,
     reporterOptions,
+    triageData,
     locale,
     isGeneratingDescription,
   } = useBlarioContext();
@@ -65,20 +66,20 @@ export function IssueReporterModal({
 
   useEffect(() => {
     if (isModalOpen) {
-      setSummary(reporterOptions?.prefill?.summary ?? '');
+      setSummary(triageData?.summary ?? '');
       setIsSummaryEdited(false);
-      setSteps(reporterOptions?.prefill?.steps ?? '');
+      setSteps(triageData?.steps ?? '');
       setIsStepsEdited(false);
-      setExpected(reporterOptions?.prefill?.expected ?? '');
-      setActual(reporterOptions?.prefill?.actual ?? '');
-      const nextSeverity = reporterOptions?.prefill?.severity;
+      setExpected(triageData?.expected ?? '');
+      setActual(triageData?.actual ?? '');
+      const nextSeverity = triageData?.severity;
       if (typeof nextSeverity === 'string' && SEVERITY_OPTIONS.includes(nextSeverity as SeverityOption)) {
         setSeverity(nextSeverity as SeverityOption);
       } else {
         setSeverity(undefined);
       }
       setIsSeverityEdited(false);
-      setCategory(reporterOptions?.category || reporterOptions?.prefill?.category || '');
+      setCategory(reporterOptions?.category || triageData?.category || '');
       setIsCategoryEdited(false);
     } else {
       setSummary('');
@@ -92,55 +93,55 @@ export function IssueReporterModal({
       setCategory('');
       setIsCategoryEdited(false);
     }
-  }, [isModalOpen]);
+  }, [isModalOpen, triageData, reporterOptions?.category]);
 
   useEffect(() => {
     if (!isModalOpen) return;
     if (isSummaryEdited) return;
 
-    if (typeof reporterOptions?.prefill?.summary === 'string') {
-      setSummary(reporterOptions.prefill.summary);
+    if (typeof triageData?.summary === 'string') {
+      setSummary(triageData.summary);
     }
-  }, [reporterOptions?.prefill?.summary, isModalOpen, isSummaryEdited]);
+  }, [triageData?.summary, isModalOpen, isSummaryEdited]);
 
   useEffect(() => {
     if (!isModalOpen) return;
-    if (!isStepsEdited && typeof reporterOptions?.prefill?.steps === 'string') {
-      setSteps(reporterOptions.prefill.steps);
+    if (!isStepsEdited && typeof triageData?.steps === 'string') {
+      setSteps(triageData.steps);
     }
 
     if (!isSeverityEdited) {
-      const nextSeverity = reporterOptions?.prefill?.severity;
+      const nextSeverity = triageData?.severity;
       if (typeof nextSeverity === 'string' && SEVERITY_OPTIONS.includes(nextSeverity as SeverityOption)) {
         setSeverity(nextSeverity as SeverityOption);
       }
     }
 
     if (!isCategoryEdited) {
-      const nextCategory = reporterOptions?.category ?? reporterOptions?.prefill?.category;
+      const nextCategory = reporterOptions?.category ?? triageData?.category;
       if (typeof nextCategory === 'string') {
         setCategory(nextCategory);
       }
     }
 
-    if (typeof reporterOptions?.prefill?.expected === 'string') {
-      setExpected(reporterOptions.prefill.expected);
+    if (typeof triageData?.expected === 'string') {
+      setExpected(triageData.expected);
     }
 
-    if (typeof reporterOptions?.prefill?.actual === 'string') {
-      setActual(reporterOptions.prefill.actual);
+    if (typeof triageData?.actual === 'string') {
+      setActual(triageData.actual);
     }
   }, [
     isModalOpen,
     isStepsEdited,
     isSeverityEdited,
     isCategoryEdited,
-    reporterOptions?.prefill?.steps,
-    reporterOptions?.prefill?.severity,
+    triageData?.steps,
+    triageData?.severity,
     reporterOptions?.category,
-    reporterOptions?.prefill?.category,
-    reporterOptions?.prefill?.expected,
-    reporterOptions?.prefill?.actual,
+    triageData?.category,
+    triageData?.expected,
+    triageData?.actual,
   ]);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -218,7 +219,7 @@ export function IssueReporterModal({
     closeReporter();
   };
 
-  const showGeneratedSummaryHint = Boolean(reporterOptions?.generatedSummary) && !isSummaryEdited;
+  const showGeneratedSummaryHint = Boolean(triageData?.summary) && !isSummaryEdited;
 
   return (
     <div className="blario-wrapper">
@@ -231,7 +232,7 @@ export function IssueReporterModal({
               <div className="absolute inset-0 bg-background/80 backdrop-blur-sm z-10 flex items-center justify-center">
                 <div className="flex flex-col items-center gap-3">
                   <Loader2 className="h-8 w-8 animate-spin text-primary" />
-                  <p className="text-sm font-medium">{t.generatingSummary}</p>
+                  <p className="text-sm font-medium text-foreground">{t.prefillingReport}</p>
                 </div>
               </div>
             )}
