@@ -6,6 +6,7 @@ import { useBlario } from '../hooks/useBlario';
 import { useBlarioContext } from '../provider/BlarioProvider';
 import { Button } from './components/button';
 import { cn } from './lib/utils';
+import type { ChatHistoryMessage } from '../core/schemas';
 
 // Types
 export type ButtonVariant = 'default' | 'destructive' | 'outline' | 'secondary' | 'ghost' | 'link';
@@ -34,7 +35,7 @@ export interface IssueReporterButtonProps {
 
   // Behavior
   category?: string;
-  prefill?: Record<string, any>;
+  chatHistory?: ChatHistoryMessage[];
   'aria-label'?: string;
 }
 
@@ -131,7 +132,7 @@ export function IssueReporterButton({
 
   // Behavior
   category,
-  prefill,
+  chatHistory,
   'aria-label': ariaLabel = DEFAULT_ARIA_LABEL,
 }: IssueReporterButtonProps) {
   const { openReporter } = useBlario();
@@ -140,8 +141,8 @@ export function IssueReporterButton({
   const finalPosition = position ?? config.theme?.position ?? 'bottom-right';
 
   const handleClick = React.useCallback(() => {
-    openReporter({ category, prefill });
-  }, [openReporter, category, prefill]);
+    openReporter({ category, chatHistory });
+  }, [openReporter, category, chatHistory]);
 
   const contentProps: ButtonContentProps = {
     icon,
