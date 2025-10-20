@@ -12,7 +12,9 @@ export default defineConfig({
     'react-dom',
     'next',
     'tailwindcss',
-    'tailwindcss-animate'
+    'tailwindcss-animate',
+    'cmdk',
+    'vaul'
   ],
   noExternal: [
     '@radix-ui/*',
@@ -20,7 +22,6 @@ export default defineConfig({
     'class-variance-authority',
     'tailwind-merge',
     'clsx',
-    'cmdk',
     'embla-carousel-react',
     'input-otp',
     'react-day-picker',
@@ -29,7 +30,6 @@ export default defineConfig({
     'recharts',
     'next-themes',
     'sonner',
-    'vaul',
     'zod'
   ],
   treeshake: true,
