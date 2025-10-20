@@ -11,13 +11,26 @@ export default defineConfig({
     'react',
     'react-dom',
     'next',
+    'tailwindcss',
+    'tailwindcss-animate'
+  ],
+  noExternal: [
     '@radix-ui/*',
     'lucide-react',
     'class-variance-authority',
     'tailwind-merge',
     'clsx',
-    'tailwindcss',
-    'tailwindcss-animate'
+    'cmdk',
+    'embla-carousel-react',
+    'input-otp',
+    'react-day-picker',
+    'react-hook-form',
+    'react-resizable-panels',
+    'recharts',
+    'next-themes',
+    'sonner',
+    'vaul',
+    'zod'
   ],
   treeshake: true,
   splitting: false,
