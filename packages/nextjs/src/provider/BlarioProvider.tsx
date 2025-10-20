@@ -22,9 +22,11 @@ import type {
 import { getCaptureManager, resetCaptureManager } from '../core/capture';
 import { getStorageManager, resetStorageManager } from '../core/storage';
 import { getApiClient, resetApiClient } from '../core/api';
+import { resetWebSocketManager } from '../core/websocket';
 import { cn } from '../ui/lib/utils';
 import '../styles/theme.css';
 import { IssueReporterModal } from '@/ui/IssueReporterModal';
+import { SupportChatModal } from '@/ui/SupportChatModal';
 
 type ReporterPrefill = Record<string, any> | undefined;
 
@@ -52,6 +54,9 @@ export interface BlarioContextValue {
   locale: 'en' | 'es';
   isGeneratingDescription: boolean;
   generatePrefillFromMessages: (messages: ChatHistoryMessage[]) => void;
+  isSupportChatOpen: boolean;
+  openSupportChat: () => void;
+  closeSupportChat: () => void;
 }
 
 const BlarioContext = createContext<BlarioContextValue | null>(null);
@@ -104,6 +109,7 @@ export function BlarioProvider({
   const [lastDiagnostic, setLastDiagnostic] = useState<DiagnosticResponse | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isGeneratingDescription, setIsGeneratingDescription] = useState(false);
+  const [isSupportChatOpen, setIsSupportChatOpen] = useState(false);
 
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -168,6 +174,7 @@ export function BlarioProvider({
       resetCaptureManager();
       resetStorageManager();
       resetApiClient();
+      resetWebSocketManager();
     };
   }, []);
 
@@ -318,6 +325,14 @@ export function BlarioProvider({
     }
   };
 
+  const openSupportChat = () => {
+    setIsSupportChatOpen(true);
+  };
+
+  const closeSupportChat = () => {
+    setIsSupportChatOpen(false);
+  };
+
   const config: BlarioConfig = useMemo(
     () => ({
       publishableKey,
@@ -372,6 +387,9 @@ export function BlarioProvider({
     locale,
     isGeneratingDescription,
     generatePrefillFromMessages,
+    isSupportChatOpen,
+    openSupportChat,
+    closeSupportChat,
   };
 
   return (
@@ -379,6 +397,7 @@ export function BlarioProvider({
       <div className={cn("blario-wrapper", theme.mode === "dark" && "dark", theme.className)}>
         {children}
         <IssueReporterModal />
+        <SupportChatModal />
       </div>
     </BlarioContext.Provider>
   );

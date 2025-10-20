@@ -113,6 +113,29 @@ export const DiagnosticResponseSchema = z.object({
   error: z.string().optional(),
 });
 
+export const ChatAttachmentSchema = z.object({
+  url: z.string(),
+  name: z.string(),
+  mime: z.string(),
+});
+
+export const SupportChatMessageSchema = z.object({
+  id: z.string(),
+  type: z.enum(['user', 'agent', 'system']),
+  content: z.string(),
+  timestamp: z.number(),
+  attachments: z.array(ChatAttachmentSchema).optional(),
+  agentId: z.string().optional(),
+  agentName: z.string().optional(),
+});
+
+export const ChatSessionSchema = z.object({
+  sessionId: z.string(),
+  messages: z.array(SupportChatMessageSchema),
+  createdAt: z.number(),
+  updatedAt: z.number(),
+});
+
 export const BlarioConfigSchema = z.object({
   publishableKey: z.string(),
   apiBaseUrl: z.string().default('https://api.blar.io'),
@@ -158,3 +181,6 @@ export type IssueReportPayload = z.infer<typeof IssueReportPayloadSchema>;
 export type Diagnostic = z.infer<typeof DiagnosticSchema>;
 export type DiagnosticResponse = z.infer<typeof DiagnosticResponseSchema>;
 export type BlarioConfig = z.infer<typeof BlarioConfigSchema>;
+export type ChatAttachment = z.infer<typeof ChatAttachmentSchema>;
+export type SupportChatMessage = z.infer<typeof SupportChatMessageSchema>;
+export type ChatSession = z.infer<typeof ChatSessionSchema>;
