@@ -1,16 +1,18 @@
 'use client';
 
-import { useBlarioContext } from '../provider/BlarioProvider';
-import type { DiagnosticResponse, FormData } from '@blario/core';
+import { useBlarioContext, type ReporterOpenOptions } from '../provider/BlarioProvider';
+import type { ChatHistoryMessage, DiagnosticResponse, FormData } from '../core/schemas';
 
 export interface UseBlarioReturn {
-  openReporter: (options?: { category?: string; prefill?: Record<string, any> }) => void;
+  openReporter: (options?: ReporterOpenOptions) => void;
   closeReporter: () => void;
   reportIssue: (formData: FormData, attachments?: File[]) => Promise<DiagnosticResponse | null>;
   lastDiagnostic: DiagnosticResponse | null;
   clearDiagnostic: () => void;
   isModalOpen: boolean;
   isSubmitting: boolean;
+  isGeneratingDescription: boolean;
+  generatePrefillFromMessages: (messages: ChatHistoryMessage[]) => void;
 }
 
 export function useBlario(): UseBlarioReturn {
@@ -42,5 +44,7 @@ export function useBlario(): UseBlarioReturn {
     clearDiagnostic: context.clearDiagnostic,
     isModalOpen: context.isModalOpen,
     isSubmitting: context.isSubmitting,
+    isGeneratingDescription: context.isGeneratingDescription,
+    generatePrefillFromMessages: context.generatePrefillFromMessages,
   };
 }

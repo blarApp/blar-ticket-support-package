@@ -1,7 +1,45 @@
 // Translations for the Issue Reporter Modal
 
-// Define the translation structure
-const en = {
+const translationTemplate = {
+  title: '',
+  description: '',
+  summary: '',
+  summaryPlaceholder: '',
+  steps: '',
+  stepsPlaceholder: '',
+  expected: '',
+  expectedPlaceholder: '',
+  actual: '',
+  actualPlaceholder: '',
+  severity: '',
+  severityPlaceholder: '',
+  severityLow: '',
+  severityMedium: '',
+  severityHigh: '',
+  severityCritical: '',
+  category: '',
+  categoryPlaceholder: '',
+  attachments: '',
+  dragDrop: '',
+  fileSupport: '',
+  chooseFiles: '',
+  uploadedFiles: '',
+  verifying: '',
+  verified: '',
+  generatingSummary: '',
+  generatedSummaryLabel: '',
+  cancel: '',
+  submit: '',
+  creatingIssue: '',
+  verifyingAttachments: '',
+  uploadingFiles: '',
+  preparingUpload: '',
+  required: '',
+} as const;
+
+type Translation = { [Key in keyof typeof translationTemplate]: string };
+
+const en: Translation = {
   title: 'Report an Issue',
   description: 'Help us improve by reporting any issues you encounter',
   summary: 'Summary',
@@ -27,6 +65,8 @@ const en = {
   uploadedFiles: 'Uploaded files',
   verifying: 'Verifying...',
   verified: '✓ Verified',
+  generatingSummary: 'Summarizing conversation...',
+  generatedSummaryLabel: 'AI-generated problem description',
   cancel: 'Cancel',
   submit: 'Submit Issue',
   creatingIssue: 'Creating Issue...',
@@ -34,9 +74,7 @@ const en = {
   uploadingFiles: 'Uploading Files...',
   preparingUpload: 'Preparing Upload...',
   required: '*',
-} as const;
-
-type Translation = typeof en;
+};
 
 const es: Translation = {
   title: 'Reportar un Problema',
@@ -64,6 +102,8 @@ const es: Translation = {
   uploadedFiles: 'Archivos subidos',
   verifying: 'Verificando...',
   verified: '✓ Verificado',
+  generatingSummary: 'Resumiendo la conversación...',
+  generatedSummaryLabel: 'Descripción del problema generada por IA',
   cancel: 'Cancelar',
   submit: 'Enviar Reporte',
   creatingIssue: 'Creando Reporte...',
@@ -73,7 +113,10 @@ const es: Translation = {
   required: '*',
 };
 
-export const translations = { en, es } as const;
+export const translations: Record<'en', Translation> & Record<'es', Translation> = {
+  en,
+  es,
+};
 
 export type Locale = keyof typeof translations;
 export type TranslationKeys = keyof Translation;

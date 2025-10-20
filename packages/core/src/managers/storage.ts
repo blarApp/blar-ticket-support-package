@@ -1,8 +1,11 @@
-import type { DiagnosticResponse } from '../schemas';
+import type { DiagnosticResponse, ChatSession, SupportChatMessage } from './schemas';
 
 const STORAGE_PREFIX = 'blario_';
 const DIAGNOSTICS_KEY = `${STORAGE_PREFIX}diagnostics`;
+const CHAT_SESSION_KEY = `${STORAGE_PREFIX}chat_session`;
+const CHAT_MESSAGES_KEY = `${STORAGE_PREFIX}chat_messages`;
 const MAX_STORED_DIAGNOSTICS = 10;
+const MAX_STORED_CHAT_MESSAGES = 100;
 
 export interface StoredDiagnostic extends DiagnosticResponse {
   timestamp: number;
@@ -150,6 +153,85 @@ class StorageManager {
       });
     } catch (error) {
       console.error('Failed to clear all storage:', error);
+    }
+  }
+
+  // Chat-related storage methods
+
+  saveChatSession(session: ChatSession): void {
+    if (!this.isAvailable) return;
+
+    try {
+      localStorage.setItem(CHAT_SESSION_KEY, JSON.stringify(session));
+    } catch (error) {
+      console.error('Failed to save chat session:', error);
+    }
+  }
+
+  getChatSession(): ChatSession | null {
+    if (!this.isAvailable) return null;
+
+    try {
+      const data = localStorage.getItem(CHAT_SESSION_KEY);
+      if (!data) return null;
+
+      return JSON.parse(data) as ChatSession;
+    } catch (error) {
+      console.error('Failed to retrieve chat session:', error);
+      return null;
+    }
+  }
+
+  saveChatMessages(messages: SupportChatMessage[]): void {
+    if (!this.isAvailable) return;
+
+    try {
+      // Keep only the most recent messages
+      const messagesToStore = messages.slice(-MAX_STORED_CHAT_MESSAGES);
+      localStorage.setItem(CHAT_MESSAGES_KEY, JSON.stringify(messagesToStore));
+    } catch (error) {
+      console.error('Failed to save chat messages:', error);
+    }
+  }
+
+  getChatMessages(): SupportChatMessage[] {
+    if (!this.isAvailable) return [];
+
+    try {
+      const data = localStorage.getItem(CHAT_MESSAGES_KEY);
+      if (!data) return [];
+
+      const messages = JSON.parse(data);
+      return Array.isArray(messages) ? messages : [];
+    } catch (error) {
+      console.error('Failed to retrieve chat messages:', error);
+      return [];
+    }
+  }
+
+  addChatMessage(message: SupportChatMessage): void {
+    if (!this.isAvailable) return;
+
+    try {
+      const messages = this.getChatMessages();
+      messages.push(message);
+
+      // Keep only the most recent messages
+      const messagesToStore = messages.slice(-MAX_STORED_CHAT_MESSAGES);
+      localStorage.setItem(CHAT_MESSAGES_KEY, JSON.stringify(messagesToStore));
+    } catch (error) {
+      console.error('Failed to add chat message:', error);
+    }
+  }
+
+  clearChatHistory(): void {
+    if (!this.isAvailable) return;
+
+    try {
+      localStorage.removeItem(CHAT_SESSION_KEY);
+      localStorage.removeItem(CHAT_MESSAGES_KEY);
+    } catch (error) {
+      console.error('Failed to clear chat history:', error);
     }
   }
 }

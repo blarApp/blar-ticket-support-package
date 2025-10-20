@@ -47,6 +47,37 @@ export const FormDataSchema = z.object({
   category: z.string().optional(),
 });
 
+export const ChatHistoryMessageSchema = z.object({
+  role: z.string().min(1, 'Role is required'),
+  content: z.string().min(1, 'Message content is required'),
+  timestamp: z.number().optional(),
+});
+
+export const TriageRequestSchema = z.object({
+  messages: z.array(ChatHistoryMessageSchema).min(1),
+});
+
+export const TriageFormDataSchema = z.object({
+  summary: z.string().min(1).optional(),
+  description: z.string().optional(),
+  steps: z.string().optional(),
+  expected: z.string().optional(),
+  actual: z.string().optional(),
+  severity: z.string().optional(),
+  category: z.string().optional(),
+});
+
+export const TriageSuggestedMetaSchema = z.object({
+  message_count: z.number().optional(),
+  triage_source: z.string().optional(),
+  confidence: z.string().optional(),
+});
+
+export const TriageResponseSchema = z.object({
+  form_data: TriageFormDataSchema,
+  suggested_meta: TriageSuggestedMetaSchema.optional(),
+});
+
 export const AttachmentSchema = z.object({
   name: z.string(),
   mime: z.string(),
@@ -80,6 +111,29 @@ export const DiagnosticResponseSchema = z.object({
   status: z.enum(['pending', 'ready', 'error']),
   diagnostic: DiagnosticSchema.optional(),
   error: z.string().optional(),
+});
+
+export const ChatAttachmentSchema = z.object({
+  url: z.string(),
+  name: z.string(),
+  mime: z.string(),
+});
+
+export const SupportChatMessageSchema = z.object({
+  id: z.string(),
+  type: z.enum(['user', 'agent', 'system']),
+  content: z.string(),
+  timestamp: z.number(),
+  attachments: z.array(ChatAttachmentSchema).optional(),
+  agentId: z.string().optional(),
+  agentName: z.string().optional(),
+});
+
+export const ChatSessionSchema = z.object({
+  sessionId: z.string(),
+  messages: z.array(SupportChatMessageSchema),
+  createdAt: z.number(),
+  updatedAt: z.number(),
 });
 
 export const BlarioConfigSchema = z.object({
@@ -117,9 +171,16 @@ export type Meta = z.infer<typeof MetaSchema>;
 export type ConsoleLog = z.infer<typeof ConsoleLogSchema>;
 export type NetworkLog = z.infer<typeof NetworkLogSchema>;
 export type FormData = z.infer<typeof FormDataSchema>;
+export type ChatHistoryMessage = z.infer<typeof ChatHistoryMessageSchema>;
+export type TriageRequest = z.infer<typeof TriageRequestSchema>;
+export type TriageFormData = z.infer<typeof TriageFormDataSchema>;
+export type TriageSuggestedMeta = z.infer<typeof TriageSuggestedMetaSchema>;
+export type TriageResponse = z.infer<typeof TriageResponseSchema>;
 export type Attachment = z.infer<typeof AttachmentSchema>;
 export type IssueReportPayload = z.infer<typeof IssueReportPayloadSchema>;
 export type Diagnostic = z.infer<typeof DiagnosticSchema>;
 export type DiagnosticResponse = z.infer<typeof DiagnosticResponseSchema>;
 export type BlarioConfig = z.infer<typeof BlarioConfigSchema>;
-
+export type ChatAttachment = z.infer<typeof ChatAttachmentSchema>;
+export type SupportChatMessage = z.infer<typeof SupportChatMessageSchema>;
+export type ChatSession = z.infer<typeof ChatSessionSchema>;
