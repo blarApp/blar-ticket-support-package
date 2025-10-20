@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useBlario } from '@blario/nextjs';
+import { IssueReporterButton } from '@blario/nextjs';
 
 interface DraftMessage {
   role: string;
@@ -18,20 +18,7 @@ const SAMPLE_CHAT: DraftMessage[] = [
 ];
 
 export default function TestTriage() {
-  const {
-    openReporter,
-    isGeneratingDescription,
-  } = useBlario();
-
   const [chatMessages] = useState<DraftMessage[]>(SAMPLE_CHAT);
-
-  const handleOpenWithChat = () => {
-    openReporter({ chatHistory: chatMessages });
-  };
-
-  const handleOpenEmptyModal = () => {
-    openReporter({});
-  };
 
   return (
     <main className="min-h-screen p-8">
@@ -41,11 +28,6 @@ export default function TestTriage() {
           <p className="text-gray-600 dark:text-gray-400">
             Compare opening the issue reporter with chat history (AI prefill) vs. without chat history (manual form). See how the AI triage endpoint analyzes conversations to suggest issue details.
           </p>
-          {isGeneratingDescription && (
-            <p className="text-sm text-blue-600 dark:text-blue-300">
-              Generating suggested description from the latest messages...
-            </p>
-          )}
         </header>
 
         <section className="grid gap-8 md:grid-cols-2">
@@ -82,13 +64,14 @@ export default function TestTriage() {
               ))}
             </div>
 
-            <button
-              onClick={handleOpenWithChat}
-              className="w-full inline-flex items-center justify-center rounded-md bg-blue-600 px-4 py-2.5 text-white hover:bg-blue-700 disabled:opacity-50"
-              disabled={isGeneratingDescription}
+            <IssueReporterButton
+              chatHistory={chatMessages}
+              variant="inline"
+              buttonVariant="default"
+              className="w-full bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50"
             >
               Open reporter with chat
-            </button>
+            </IssueReporterButton>
 
             <div className="text-xs text-gray-500 dark:text-gray-400">
               {chatMessages.length} messages will be sent to AI triage
@@ -127,12 +110,13 @@ export default function TestTriage() {
               </p>
             </div>
 
-            <button
-              onClick={handleOpenEmptyModal}
-              className="w-full inline-flex items-center justify-center rounded-md border-2 border-gray-300 dark:border-gray-600 px-4 py-2.5 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800"
+            <IssueReporterButton
+              variant="inline"
+              buttonVariant="outline"
+              className="w-full"
             >
               Open reporter without chat
-            </button>
+            </IssueReporterButton>
 
             <div className="text-xs text-gray-500 dark:text-gray-400">
               Form opens empty, no AI triage
