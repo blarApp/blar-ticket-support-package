@@ -60,6 +60,9 @@ importers:
       '@blario/nextjs':
         specifier: workspace:*
         version: link:../../packages/nextjs
+      lucide-react:
+        specifier: ^0.309.0
+        version: 0.309.0(react@18.3.1)
       next:
         specifier: 14.2.5
         version: 14.2.5(@babel/core@7.28.4)(react-dom@18.3.1)(react@18.3.1)
