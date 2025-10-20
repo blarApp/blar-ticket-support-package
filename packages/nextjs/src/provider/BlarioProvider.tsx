@@ -28,17 +28,22 @@ import '../styles/theme.css';
 import { IssueReporterModal } from '@/ui/IssueReporterModal';
 import { SupportChatModal } from '@/ui/SupportChatModal';
 
-type ReporterPrefill = Record<string, any> | undefined;
-
 export interface ReporterOptions {
   category?: string;
-  prefill?: ReporterPrefill;
   chatHistory?: ChatHistoryMessage[];
-  generatedSummary?: string;
-  suggestedMeta?: TriageSuggestedMeta;
 }
 
-export type ReporterOpenOptions = Omit<ReporterOptions, 'generatedSummary' | 'suggestedMeta'>;
+export type ReporterOpenOptions = ReporterOptions;
+
+export interface TriageData {
+  summary?: string;
+  steps?: string;
+  expected?: string;
+  actual?: string;
+  severity?: 'low' | 'medium' | 'high' | 'critical';
+  category?: string;
+  meta?: TriageSuggestedMeta;
+}
 
 export interface BlarioContextValue {
   config: BlarioConfig;
@@ -46,6 +51,7 @@ export interface BlarioContextValue {
   openReporter: (options?: ReporterOpenOptions) => void;
   closeReporter: () => void;
   reporterOptions?: ReporterOptions;
+  triageData?: TriageData;
   lastDiagnostic: DiagnosticResponse | null;
   isSubmitting: boolean;
   submitIssue: (formData: any) => Promise<DiagnosticResponse | null>;
@@ -106,6 +112,7 @@ export function BlarioProvider({
 }: BlarioProviderProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [reporterOptions, setReporterOptions] = useState<ReporterOptions>({});
+  const [triageData, setTriageData] = useState<TriageData | undefined>(undefined);
   const [lastDiagnostic, setLastDiagnostic] = useState<DiagnosticResponse | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isGeneratingDescription, setIsGeneratingDescription] = useState(false);
@@ -201,20 +208,15 @@ export function BlarioProvider({
         ? (formData.severity as 'low' | 'medium' | 'high' | 'critical')
         : undefined;
 
-    setReporterOptions(prev => ({
-      ...prev,
-      prefill: {
-        ...prev.prefill,
-        summary: formData.summary ?? prev.prefill?.summary,
-        steps: formData.steps ?? formData.description ?? prev.prefill?.steps,
-        severity: normalizedSeverity ?? prev.prefill?.severity,
-        category: formData.category ?? prev.prefill?.category,
-        expected: formData.expected ?? prev.prefill?.expected,
-        actual: formData.actual ?? prev.prefill?.actual,
-      },
-      generatedSummary: formData.summary ?? formData.description ?? prev.generatedSummary,
-      suggestedMeta: suggestedMeta ?? prev.suggestedMeta,
-    }));
+    setTriageData({
+      summary: formData.summary,
+      steps: formData.steps ?? formData.description,
+      severity: normalizedSeverity,
+      category: formData.category,
+      expected: formData.expected,
+      actual: formData.actual,
+      meta: suggestedMeta,
+    });
   }, []);
 
   const generatePrefillFromMessages = useCallback(
@@ -253,14 +255,13 @@ export function BlarioProvider({
   const openReporter = (options: ReporterOpenOptions = {}) => {
     const normalizedOptions: ReporterOptions = {
       category: options.category,
-      prefill: options.prefill ? { ...options.prefill } : undefined,
       chatHistory: options.chatHistory,
     };
 
     setReporterOptions(normalizedOptions);
     setIsModalOpen(true);
 
-    if (options.chatHistory && options.chatHistory.length > 0 && !options.prefill?.summary) {
+    if (options.chatHistory && options.chatHistory.length > 0) {
       generatePrefillFromMessages(options.chatHistory);
     } else {
       generationRequestIdRef.current += 1;
@@ -272,6 +273,7 @@ export function BlarioProvider({
     setIsModalOpen(false);
     generationRequestIdRef.current += 1;
     setReporterOptions({});
+    setTriageData(undefined);
     setIsGeneratingDescription(false);
   };
 
@@ -379,6 +381,7 @@ export function BlarioProvider({
     openReporter,
     closeReporter,
     reporterOptions,
+    triageData,
     lastDiagnostic,
     isSubmitting,
     submitIssue,
