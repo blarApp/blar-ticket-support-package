@@ -8,7 +8,7 @@ import { waitForElement, waitForPageReady } from './elementWaiter';
 import { Button } from '../ui/components/button';
 import { Card } from '../ui/components/card';
 import { X, ChevronLeft, ChevronRight, Loader2 } from 'lucide-react';
-import { cn } from '../ui/lib/utils';
+import { cn } from '../lib/cn';
 
 export interface TourOverlayProps {
   step: TourStep;

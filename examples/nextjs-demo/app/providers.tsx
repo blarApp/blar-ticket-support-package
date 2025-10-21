@@ -32,7 +32,7 @@ export function Providers({ children }: { children: React.ReactNode | React.Reac
   return (
     <BlarioProvider
       publishableKey={process.env.NEXT_PUBLIC_BLARIO_PUBLISHABLE_KEY!}
-      apiBaseUrl="http://blar.local"
+      apiBaseUrl="http://127.0.0.1:8000"
       locale="es"
       user={{
         id: 'demo-user-123',

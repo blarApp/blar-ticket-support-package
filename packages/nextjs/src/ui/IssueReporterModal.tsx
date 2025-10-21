@@ -13,7 +13,7 @@ import {
   Dialog,
   DialogContent,
 } from './components/dialog';
-import type { FormData } from '../core/schemas';
+import type { FormData } from '@blario/core';
 import { translations } from './translations';
 
 const SEVERITY_OPTIONS = ['low', 'medium', 'high', 'critical'] as const;

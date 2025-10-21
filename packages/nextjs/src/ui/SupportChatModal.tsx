@@ -4,13 +4,13 @@ import React, { useEffect, useRef, useState } from 'react';
 import { X, Send, Paperclip, Loader2, Wifi, WifiOff, AlertCircle } from 'lucide-react';
 import { useBlarioContext } from '../provider/BlarioProvider';
 import { useSupportChat } from '../hooks/useSupportChat';
-import { getUploadManager } from '../core/upload';
-import { getApiClient } from '../core/api';
+import { getUploadManager } from '@blario/core';
+import { getApiClient } from '@blario/core';
 import { Button } from './components/button';
 import { Input } from './components/input';
 import { Dialog, DialogContent } from './components/dialog';
 import { cn } from './lib/utils';
-import type { SupportChatMessage, ChatAttachment } from '../core/schemas';
+import type { SupportChatMessage, ChatAttachment } from '@blario/core';
 
 export interface SupportChatModalProps {
   className?: string;

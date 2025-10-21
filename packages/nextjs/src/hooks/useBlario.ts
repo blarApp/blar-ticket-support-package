@@ -1,7 +1,7 @@
 'use client';
 
 import { useBlarioContext, type ReporterOpenOptions } from '../provider/BlarioProvider';
-import type { ChatHistoryMessage, DiagnosticResponse, FormData } from '../core/schemas';
+import type { ChatHistoryMessage, DiagnosticResponse, FormData } from '@blario/core';
 
 export interface UseBlarioReturn {
   openReporter: (options?: ReporterOpenOptions) => void;

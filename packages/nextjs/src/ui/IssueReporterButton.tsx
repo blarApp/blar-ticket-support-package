@@ -6,7 +6,7 @@ import { useBlario } from '../hooks/useBlario';
 import { useBlarioContext } from '../provider/BlarioProvider';
 import { Button } from './components/button';
 import { cn } from './lib/utils';
-import type { ChatHistoryMessage } from '../core/schemas';
+import type { ChatHistoryMessage } from '@blario/core';
 
 // Types
 export type ButtonVariant = 'default' | 'destructive' | 'outline' | 'secondary' | 'ghost' | 'link';

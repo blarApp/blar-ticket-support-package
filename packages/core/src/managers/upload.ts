@@ -13,7 +13,7 @@ export interface UploadConfig {
   expires_in: number;
   max_size: number;
   file_type: 'image' | 'video';
-  headers?: Record<string, string>; // Additional headers required by the signed URL
+  headers?: Record<string, string>;
 }
 
 export interface PrepareUploadsRequest {
@@ -40,17 +40,16 @@ export interface VerifyAttachmentsResponse {
 export class UploadManager {
   private apiClient: ApiClient;
 
-  // File validation constants
   private readonly MAX_FILES = 5;
-  private readonly MAX_IMAGE_SIZE = 5 * 1024 * 1024; // 5MB
-  private readonly MAX_VIDEO_SIZE = 50 * 1024 * 1024; // 50MB
+  private readonly MAX_IMAGE_SIZE = 5 * 1024 * 1024;
+  private readonly MAX_VIDEO_SIZE = 50 * 1024 * 1024;
 
   private readonly ALLOWED_IMAGE_TYPES = [
     'image/png',
     'image/jpeg',
     'image/jpg',
     'image/gif',
-    'image/webp'
+    'image/webp',
   ];
 
   private readonly ALLOWED_VIDEO_TYPES = [
@@ -58,47 +57,31 @@ export class UploadManager {
     'video/webm',
     'video/quicktime',
     'video/x-msvideo',
-    'video/x-ms-wmv'
+    'video/x-ms-wmv',
   ];
 
   constructor(apiClient: ApiClient) {
     this.apiClient = apiClient;
   }
 
-  /**
-   * Upload files and attach to issue (complete 3-step process)
-   *
-   * This performs the complete upload process:
-   * - Step 1: Get signed URLs from backend (with issue ID)
-   * - Step 2: Upload files directly to GCS
-   * - Step 3: Verify attachments are linked to issue
-   */
   async uploadFilesForIssue(
     files: File[],
     issueId: string,
     onProgress?: (step: 'preparing' | 'uploading' | 'verifying' | 'complete', percent?: number) => void
   ): Promise<string[]> {
-    console.log('uploadFilesForIssue called with issueId:', issueId, 'files:', files.length);
-
     if (!files || files.length === 0) {
       return [];
     }
 
-    // Validate files
     this.validateFiles(files);
 
-    // Step 1: Get signed URLs from backend with issue ID
-    console.log('Step 1: Preparing uploads for issue:', issueId);
     onProgress?.('preparing');
     const uploadConfigs = await this.prepareUploads(files, issueId);
-    console.log('Got upload configs:', uploadConfigs);
 
-    // Step 2: Upload each file directly to GCS
     onProgress?.('uploading', 0);
     const uploadTokens = await this.performUploads(files, uploadConfigs);
     onProgress?.('uploading', 100);
 
-    // Step 3: Verify attachments are properly linked to the issue
     onProgress?.('verifying');
     const verificationResult = await this.verifyAttachments(issueId, uploadTokens);
 
@@ -110,10 +93,6 @@ export class UploadManager {
     return uploadTokens;
   }
 
-  /**
-   * Upload files to GCS using signed URLs with progress callback
-   * @deprecated Use uploadFilesForIssue instead for the complete flow
-   */
   async uploadFiles(
     files: File[],
     onProgress?: (step: 'preparing' | 'uploading' | 'complete', percent?: number) => void
@@ -122,26 +101,19 @@ export class UploadManager {
       return [];
     }
 
-    // Validate files
     this.validateFiles(files);
 
-    // Step 1: Get signed URLs from backend
     onProgress?.('preparing');
     const uploadConfigs = await this.prepareUploads(files);
 
-    // Step 2: Upload each file directly to GCS
     onProgress?.('uploading', 0);
     const uploadTokens = await this.performUploads(files, uploadConfigs);
     onProgress?.('uploading', 100);
 
-    // Note: Step 3 (verification) needs to happen with issue ID
     onProgress?.('complete');
     return uploadTokens;
   }
 
-  /**
-   * Prepare uploads by getting signed URLs from backend
-   */
   private async prepareUploads(files: File[], issueId?: string): Promise<UploadConfig[]> {
     const fileMetadata: FileMetadata[] = files.map((file) => ({
       name: file.name,
@@ -178,9 +150,6 @@ export class UploadManager {
     return data.uploads;
   }
 
-  /**
-   * Upload files directly to GCS using signed URLs
-   */
   private async performUploads(
     files: File[],
     uploadConfigs: UploadConfig[]
@@ -193,15 +162,12 @@ export class UploadManager {
       }
 
       try {
-        // Build additional headers based on config
         const additionalHeaders: Record<string, string> = {};
 
-        // Add x-goog-content-length-range header if max_size is provided
         if (config.max_size) {
           additionalHeaders['x-goog-content-length-range'] = `0,${config.max_size}`;
         }
 
-        // Merge with any headers from backend
         if (config.headers) {
           Object.assign(additionalHeaders, config.headers);
         }
@@ -221,17 +187,11 @@ export class UploadManager {
     return Promise.all(uploadPromises);
   }
 
-  /**
-   * Upload a single file to GCS
-   */
   private async uploadToGCS(uploadUrl: string, file: File, additionalHeaders?: Record<string, string>): Promise<Response> {
-    // For GCS signed URLs, typically only Content-Type is needed
-    // Default to 'application/octet-stream' if file type is not available
     const headers: Record<string, string> = {
       'Content-Type': file.type || 'application/octet-stream',
     };
 
-    // Only spread additional headers if they exist
     if (additionalHeaders) {
       Object.assign(headers, additionalHeaders);
     }
@@ -243,9 +203,6 @@ export class UploadManager {
     });
   }
 
-  /**
-   * Upload with progress tracking using XMLHttpRequest
-   */
   async uploadWithProgress(
     uploadUrl: string,
     file: File,
@@ -285,10 +242,6 @@ export class UploadManager {
     });
   }
 
-  /**
-   * Verify that attachments were uploaded successfully and link to issue
-   * This is Step 3 of the upload process - happens after issue creation
-   */
   async verifyAttachments(issueId: string, uploadTokens: string[]): Promise<VerifyAttachmentsResponse> {
     const config = this.apiClient.getConfig();
 
@@ -309,16 +262,12 @@ export class UploadManager {
 
     if (!response.ok) {
       console.warn('Failed to verify some attachments');
-      // Don't throw here - attachments are optional
       return { success: false, attachments: [] };
     }
 
     return response.json() as Promise<VerifyAttachmentsResponse>;
   }
 
-  /**
-   * Validate files before upload
-   */
   private validateFiles(files: File[]): void {
     if (files.length > this.MAX_FILES) {
       throw new Error(`Maximum ${this.MAX_FILES} files allowed`);
@@ -343,9 +292,6 @@ export class UploadManager {
     }
   }
 
-  /**
-   * Upload with retry logic
-   */
   async uploadWithRetry(
     uploadUrl: string,
     file: File,
@@ -362,7 +308,6 @@ export class UploadManager {
           return response;
         }
 
-        // Don't retry on auth errors
         if (response.status === 401 || response.status === 403) {
           throw new Error(`Upload authorization failed: ${response.status}`);
         }
@@ -371,13 +316,11 @@ export class UploadManager {
       } catch (error) {
         lastError = error instanceof Error ? error : new Error('Upload failed');
 
-        // Don't retry on auth errors
         if (lastError.message.includes('authorization')) {
           throw lastError;
         }
       }
 
-      // Wait before retry with exponential backoff
       if (attempt < maxRetries - 1) {
         const delay = Math.min(1000 * Math.pow(2, attempt), 10000);
         await new Promise(resolve => setTimeout(resolve, delay));
@@ -388,7 +331,6 @@ export class UploadManager {
   }
 }
 
-// Singleton instance management
 let uploadManagerInstance: UploadManager | null = null;
 
 export function getUploadManager(apiClient: ApiClient): UploadManager {
@@ -401,3 +343,4 @@ export function getUploadManager(apiClient: ApiClient): UploadManager {
 export function resetUploadManager(): void {
   uploadManagerInstance = null;
 }
+

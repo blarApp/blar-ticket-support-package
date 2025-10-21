@@ -1,11 +1,16 @@
-import type { ConsoleLog, NetworkLog, Meta, Viewport } from './schemas';
+import type { ConsoleLog, Meta, NetworkLog, Viewport } from '../schemas';
 
-interface CaptureConfig {
+export interface CaptureConfig {
   maxConsoleLogs: number;
   maxNetworkLogs: number;
   captureConsole: boolean;
   captureNetwork: boolean;
 }
+
+export type MetaProvider = {
+  getAppVersion?: () => string | undefined;
+  getRelease?: () => string | undefined;
+};
 
 class RingBuffer<T> {
   private buffer: T[] = [];
@@ -38,8 +43,9 @@ export class CaptureManager {
   private originalConsole: Record<string, any> = {};
   private routeHistory: string[] = [];
   private isCapturing = false;
+  private metaProvider?: MetaProvider;
 
-  constructor(config: Partial<CaptureConfig> = {}) {
+  constructor(config: Partial<CaptureConfig> = {}, metaProvider?: MetaProvider) {
     this.config = {
       maxConsoleLogs: config.maxConsoleLogs ?? 50,
       maxNetworkLogs: config.maxNetworkLogs ?? 20,
@@ -49,6 +55,7 @@ export class CaptureManager {
 
     this.consoleLogs = new RingBuffer(this.config.maxConsoleLogs);
     this.networkLogs = new RingBuffer(this.config.maxNetworkLogs);
+    this.metaProvider = metaProvider;
   }
 
   startCapture(): void {
@@ -161,10 +168,10 @@ export class CaptureManager {
       /\b(?:\d{4}[-\s]?){3}\d{4}\b/g,
       /\b\d{3}-\d{2}-\d{4}\b/g,
       /Bearer\s+[A-Za-z0-9\-._~+\/]+=*/g,
-      /api[_-]?key["\']?\s*[:=]\s*["\']?[A-Za-z0-9\-._~+\/]+/gi,
-      /password["\']?\s*[:=]\s*["\']?[^\s"']+/gi,
-      /secret["\']?\s*[:=]\s*["\']?[^\s"']+/gi,
-      /token["\']?\s*[:=]\s*["\']?[A-Za-z0-9\-._~+\/]+/gi,
+      /api[_-]?key["']?\s*[:=]\s*["']?[A-Za-z0-9\-._~+\/]+/gi,
+      /password["']?\s*[:=]\s*["']?[^\s"']+/gi,
+      /secret["']?\s*[:=]\s*["']?[^\s"']+/gi,
+      /token["']?\s*[:=]\s*["']?[A-Za-z0-9\-._~+\/]+/gi,
     ];
 
     let redacted = text;
@@ -204,8 +211,8 @@ export class CaptureManager {
       locale: navigator.language,
       viewport,
       ua: navigator.userAgent,
-      appVersion: process.env.NEXT_PUBLIC_APP_VERSION,
-      release: process.env.NEXT_PUBLIC_RELEASE,
+      appVersion: this.metaProvider?.getAppVersion?.(),
+      release: this.metaProvider?.getRelease?.(),
     };
   }
 
@@ -230,9 +237,9 @@ export class CaptureManager {
 
 let captureManagerInstance: CaptureManager | null = null;
 
-export function getCaptureManager(config?: Partial<CaptureConfig>): CaptureManager {
+export function getCaptureManager(config?: Partial<CaptureConfig>, metaProvider?: MetaProvider): CaptureManager {
   if (!captureManagerInstance) {
-    captureManagerInstance = new CaptureManager(config);
+    captureManagerInstance = new CaptureManager(config, metaProvider);
   }
   return captureManagerInstance;
 }
@@ -243,3 +250,4 @@ export function resetCaptureManager(): void {
     captureManagerInstance = null;
   }
 }
+

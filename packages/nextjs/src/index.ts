@@ -71,13 +71,13 @@ export type {
   SupportChatMessage,
   ChatAttachment,
   ChatSession,
-} from './core/schemas';
+} from '@blario/core';
 
 export type {
   WebSocketMessage,
   ConnectionState,
   WebSocketManagerConfig,
-} from './core/websocket';
+} from '@blario/core';
 
 // Export utility functions
 export { cn } from './lib/cn';

@@ -2,9 +2,9 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useBlarioContext } from '../provider/BlarioProvider';
-import { getWebSocketManager, type ConnectionState, type WebSocketMessage } from '../core/websocket';
-import { getStorageManager } from '../core/storage';
-import type { SupportChatMessage, ChatAttachment } from '../core/schemas';
+import { getWebSocketManager, type ConnectionState, type WebSocketMessage } from '@blario/core';
+import { getStorageManager } from '@blario/core';
+import type { SupportChatMessage, ChatAttachment } from '@blario/core';
 
 export interface UseSupportChatOptions {
   onMessage?: (message: SupportChatMessage) => void;

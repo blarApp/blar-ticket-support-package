@@ -1,4 +1,4 @@
-import type { DiagnosticResponse, ChatSession, SupportChatMessage } from './schemas';
+import type { DiagnosticResponse, ChatSession, SupportChatMessage } from '../schemas';
 
 const STORAGE_PREFIX = 'blario_';
 const DIAGNOSTICS_KEY = `${STORAGE_PREFIX}diagnostics`;
@@ -246,8 +246,10 @@ export function getStorageManager(): StorageManager {
 }
 
 export function resetStorageManager(): void {
-  if (storageManagerInstance) {
-    storageManagerInstance.clearAll();
-    storageManagerInstance = null;
-  }
+    if (storageManagerInstance) {
+      storageManagerInstance.clearAll();
+      storageManagerInstance = null;
+    }
 }
+
+

@@ -4,29 +4,47 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Blar Support JS is a monorepo of JavaScript/TypeScript SDKs for AI-powered issue diagnostics and support. The primary package is `@blario/nextjs`, a drop-in issue reporter for Next.js applications with AI-powered diagnostics, interactive chat support, and guided product tours.
+Blar Support JS is a monorepo of JavaScript/TypeScript SDKs for AI-powered issue diagnostics and support. The repository provides framework-specific SDKs (`@blario/nextjs` and `@blario/vue`) that share common functionality through the `@blario/core` package.
 
 ## Repository Structure
 
-This is a **pnpm workspace monorepo** with the following structure:
+This is a **pnpm workspace monorepo** managed by **Turborepo** with the following structure:
 
 ```
 packages/
-  nextjs/          - Next.js SDK with React components (main package)
+  core/            - Shared core logic (API client, capture manager, storage, schemas)
+  nextjs/          - Next.js SDK with React components
+  vue/             - Vue 3 SDK with Vue components
 examples/
   nextjs-demo/     - Demo Next.js application
+  vue-demo/        - Demo Vue application
+  vuetify-demo/    - Demo Vuetify application
 ```
 
-The `@blario/nextjs` package architecture:
-- `src/core/` - Core functionality (API client, data capture, storage, file upload, schemas)
+### Package Details
+
+**`@blario/core`** - Framework-agnostic shared functionality:
+- `src/managers/api.ts` - API client with retry logic and signed URL upload
+- `src/managers/storage.ts` - LocalStorage manager for diagnostic history
+- `src/managers/upload.ts` - File upload manager with progress tracking
+- `src/managers/websocket.ts` - WebSocket connection manager
+- `src/schemas.ts` - Zod schemas for validation
+
+**`@blario/nextjs`** - Next.js/React SDK:
 - `src/provider/` - React context provider (BlarioProvider)
-- `src/hooks/` - React hooks (useBlario, useBlarioUpload, use-mobile, use-toast)
-- `src/ui/` - UI components (IssueReporterModal, IssueReporterButton, DiagnosticBanner, shadcn/ui components)
-- `src/chat/` - Chat widget functionality
+- `src/hooks/` - React hooks (useBlario, useBlarioUpload, useSupportChat, use-mobile, use-toast)
+- `src/ui/` - UI components (IssueReporterModal, IssueReporterButton, DiagnosticBanner, SupportChatButton, SupportChatModal, shadcn/ui components)
 - `src/tour/` - Product tour system (TourProvider, TourOverlay, element finding/waiting)
 - `src/errors/` - Error boundary components
 - `src/lib/` - Utility functions (cn, variants)
-- `src/styles/` - CSS styles
+- `src/styles/` - Tailwind CSS styles
+
+**`@blario/vue`** - Vue 3 SDK:
+- `src/plugin/BlarioPlugin.ts` - Vue plugin for global installation
+- `src/composables/` - Vue composables (useBlario, useBlarioUpload)
+- `src/components/` - Vue components (BlarioProvider, BlarioRoot, IssueReporterModal, IssueReporterButton, DiagnosticBanner, ChatWidget, TourProvider)
+- `src/lib/` - Utility functions (cn, variants)
+- `src/styles/` - Standalone CSS (framework-agnostic, works without Tailwind)
 
 ## Common Development Commands
 
@@ -70,78 +88,107 @@ pnpm clean
 ```
 
 ### Package-Specific Commands
+
+**Core package:**
 ```bash
-# Navigate to the nextjs package
+cd packages/core
+pnpm dev              # Development mode with watch
+pnpm build            # Build the package
+pnpm typecheck        # Type checking
+pnpm clean            # Remove dist folder
+```
+
+**Next.js package:**
+```bash
 cd packages/nextjs
+pnpm dev              # Development mode with watch
+pnpm build            # Build the package
+pnpm build:css        # Build only CSS
+pnpm test             # Run tests
+pnpm test:ui          # Run tests with UI
+pnpm test:coverage    # Run tests with coverage
+pnpm size             # Check bundle size
+pnpm typecheck        # Type checking
+pnpm lint             # Lint
+```
 
-# Development mode with watch
-pnpm dev
-
-# Build the package
-pnpm build
-
-# Build only CSS
-pnpm build:css
-
-# Run tests
-pnpm test
-
-# Run tests with UI
-pnpm test:ui
-
-# Run tests with coverage
-pnpm test:coverage
-
-# Check bundle size
-pnpm size
-
-# Type checking
-pnpm typecheck
-
-# Lint
-pnpm lint
+**Vue package:**
+```bash
+cd packages/vue
+pnpm dev              # Development mode with watch (Vite)
+pnpm build            # Build library, CSS, and theme
+pnpm build:css        # Build standalone CSS only
+pnpm build:theme      # Copy theme CSS to dist
+pnpm test             # Run tests
+pnpm test:ui          # Run tests with UI
+pnpm test:coverage    # Run tests with coverage
+pnpm size             # Check bundle size
+pnpm typecheck        # Type checking (vue-tsc)
+pnpm lint             # Lint
 ```
 
 ### Running a Single Test
 ```bash
-# In packages/nextjs directory
+# In any package directory (nextjs or vue)
 pnpm test <test-file-pattern>
 
-# Example
+# Examples
 pnpm test api.test.ts
+pnpm test BlarioPlugin.test.ts
 ```
 
 ## Key Architecture Patterns
 
-### 1. Singleton Pattern for Core Services
-The package uses singleton instances for core services to avoid multiple initializations:
-- `getApiClient()` / `resetApiClient()` in `src/core/api.ts`
-- `getCaptureManager()` / `resetCaptureManager()` in `src/core/capture.ts`
-- `getStorageManager()` / `resetStorageManager()` in `src/core/storage.ts`
+### 1. Monorepo with Shared Core
+The repository uses a **shared core architecture**:
+- `@blario/core` contains framework-agnostic logic (API client, schemas, managers)
+- Framework-specific packages (`@blario/nextjs`, `@blario/vue`) depend on `@blario/core`
+- Core singletons are managed via factory functions: `getApiClient()`, `getCaptureManager()`, `getStorageManager()`
+- Each singleton has a corresponding `reset*()` function for cleanup
 
-These singletons are created on first access and can be reset when the BlarioProvider unmounts.
+**Turborepo build pipeline:**
+- Core package builds first (dependency via `^build` in turbo.json)
+- Framework packages build after core is ready
+- Tests depend on completed builds
 
-### 2. File Upload Architecture
-The package uses a **signed URL upload pattern** for attachments:
+### 2. Framework Integration Patterns
+
+**React (Next.js):**
+- Uses React Context via `BlarioProvider` component
+- Must use `'use client'` directive in Next.js App Router
+- Hooks: `useBlario()`, `useBlarioUpload()`, `useSupportChat()`
+- Build: tsup + PostCSS for Tailwind
+
+**Vue 3:**
+- Uses Vue Plugin pattern via `app.use(BlarioPlugin, options)`
+- Provides global `$blario` instance via `app.config.globalProperties`
+- Composables: `useBlario()`, `useBlarioUpload()`
+- Integrates with Vue Router for route tracking (if available)
+- Build: Vite + PostCSS for standalone CSS
+- CSS is framework-agnostic (works without Tailwind, supports Vuetify/PrimeVue/Quasar/ElementPlus)
+
+### 3. File Upload Architecture
+Both packages use a **signed URL upload pattern**:
 - Attachments are NOT sent as base64 in the JSON payload
 - Files are uploaded separately using signed URLs from the backend
-- The `useBlarioUpload` hook manages upload progress and retry logic
+- Upload managers handle progress tracking and retry logic
 - Upload flow: request signed URL → upload file directly → attach to issue
 
-See `src/core/upload.ts` for the upload manager implementation.
+Implementation in `@blario/core/src/managers/upload.ts`.
 
-### 3. Context-Based State Management
-The `BlarioProvider` uses React Context to provide:
+### 4. State Management Patterns
+**React:** Context API with `readonly()` state
+**Vue:** Reactive state with `reactive()` and `readonly()` wrapper, provided via dependency injection (`inject(BlarioKey)`)
+
+Both patterns provide:
 - Configuration (API keys, user info, theme)
 - Modal state management
 - Issue submission flow
 - Rate limiting
 - Diagnostic history
 
-The provider must be wrapped in a Client Component (`'use client'`) when used in Next.js App Router.
-
-### 4. Capture System
-The `CaptureManager` (in `src/core/capture.ts`) automatically collects:
+### 5. Capture System
+The `CaptureManager` from `@blario/core` automatically collects:
 - Console logs (configurable max: 50)
 - Network requests (optional, configurable max: 20)
 - Viewport information
@@ -150,22 +197,22 @@ The `CaptureManager` (in `src/core/capture.ts`) automatically collects:
 
 This data is attached to issue reports for AI diagnostics.
 
-### 5. AI Triage System
-The package includes AI-powered issue prefill:
-- `generateIssuePrefill()` in `src/core/api.ts` sends chat history to triage endpoint
+### 6. AI Triage System
+The `ApiClient` in `@blario/core` provides AI-powered issue prefill:
+- `generateIssuePrefill()` sends chat history to triage endpoint
 - Backend AI analyzes conversation and suggests issue category, severity, description
-- Results are applied to the issue reporter form via `applyTriageResponse()` in BlarioProvider
+- Framework packages apply triage responses to their respective UI forms
 
-### 6. Tour System
-The tour feature enables guided product tours:
-- `TourProvider` manages tour state and progression
-- `withTour()` helper finds DOM elements by various selectors (CSS, text content, ARIA labels)
-- `elementWaiter` utilities handle asynchronous element loading
+### 7. Tour System
+Both frameworks support guided product tours:
+- Tour providers manage tour state and progression
+- DOM element finding by various selectors (CSS, text content, ARIA labels)
+- Element waiter utilities handle asynchronous element loading
 - Tours can target dynamic content and wait for elements to appear
 
 ## TypeScript Configuration
 
-The package uses strict TypeScript settings:
+All packages use strict TypeScript settings:
 - `strict: true`
 - `noUnusedLocals: true`
 - `noUnusedParameters: true`
@@ -173,33 +220,50 @@ The package uses strict TypeScript settings:
 - `noFallthroughCasesInSwitch: true`
 - `noUncheckedIndexedAccess: true`
 
-Path aliases are configured:
-- `@/*` → `./src/*`
-- `@/components/ui/*` → `./src/ui/components/*`
-- `@/hooks/*` → `./src/hooks/*`
+Path aliases:
+- `@/*` → `./src/*` (all packages)
 
 ## Testing
 
-Tests use **Vitest** with:
+All packages use **Vitest** with:
 - `happy-dom` environment for DOM testing
-- `@testing-library/react` for component testing
+- Component testing libraries:
+  - `@testing-library/react` for Next.js package
+  - `@vue/test-utils` for Vue package
 - Global test utilities via `src/__tests__/setup.ts`
 - Coverage reporting with text, JSON, and HTML formats
 
 ## Styling
 
-The package uses **Tailwind CSS** with:
-- Custom preset in `tailwind-preset.js`
+**Next.js package:**
+- Uses **Tailwind CSS** with custom preset (`tailwind-preset.js`)
 - shadcn/ui components (Radix UI primitives + Tailwind)
-- Theme CSS in `src/styles/theme.css`
-- Dark mode support via `dark` class on document root
-- CSS utilities: `cn()` from `src/lib/cn.ts` for class merging
+- Dark mode via `dark` class on document root
+- Utilities: `cn()` from `src/lib/cn.ts` for class merging
+
+**Vue package:**
+- Uses **standalone CSS** (framework-agnostic, no Tailwind dependency required)
+- Optionally supports Tailwind via `tailwind-preset.js`
+- Compatible with Vuetify, PrimeVue, Quasar, Element Plus
+- Radix Vue components (Vue port of Radix UI)
+- Dark mode via `dark` class on document root
+- Utilities: `cn()` from `src/lib/cn.ts` for class merging
 
 ## Building and Bundling
 
-Build process uses **tsup**:
+**Core package (tsup):**
 - Outputs: CJS, ESM, and type declarations
-- CSS is built separately via PostCSS
+- No CSS output
+
+**Next.js package (tsup):**
+- Outputs: CJS, ESM, and type declarations
+- CSS built separately via PostCSS
+- Size limit: 25KB gzipped (enforced by size-limit)
+
+**Vue package (Vite):**
+- Outputs: ESM, CJS, and type declarations
+- CSS built separately via PostCSS
+- Standalone CSS scoped to `.blario-root` for isolation
 - Size limit: 25KB gzipped (enforced by size-limit)
 
 ## Versioning and Publishing
@@ -230,25 +294,42 @@ Commits are validated pre-commit via husky and lint-staged.
 
 ## Environment Requirements
 
+**Development:**
 - Node.js >= 18.0.0
 - pnpm >= 8.0.0
-- For SDK usage: Next.js >= 13.4.0, React >= 18.2.0, Tailwind CSS >= 3.4.0
+
+**SDK peer dependencies:**
+- `@blario/nextjs`: Next.js >= 13.4.0, React >= 18.2.0, Tailwind CSS >= 3.4.0
+- `@blario/vue`: Vue >= 3.3.0, Vue Router >= 4.0.0, Tailwind CSS >= 3.4.0 (optional)
 
 ## Integration Notes for Consumers
 
-When integrating `@blario/nextjs`:
+**When integrating `@blario/nextjs`:**
 1. **Tailwind content paths**: Must include `'./node_modules/@blario/nextjs/dist/**/*.{js,ts,jsx,tsx,mjs,cjs}'` in `tailwind.config.ts`
 2. **Tailwind preset**: Import and use `preset` from `@blario/nextjs/tailwind-preset`
 3. **Client Component wrapper**: BlarioProvider requires `'use client'` directive
 4. **Environment variables**: Use `NEXT_PUBLIC_` prefix for publishable keys
 5. **Dark mode**: Ensure `darkMode: "class"` in Tailwind config
 
+**When integrating `@blario/vue`:**
+1. **Plugin registration**: Use `app.use(BlarioPlugin, { publishableKey, ... })` in main.ts/js
+2. **CSS import options**:
+   - Standalone CSS (no Tailwind): `import '@blario/vue/styles.css'`
+   - With Tailwind: Include content path and preset in `tailwind.config.js`
+3. **Tailwind content paths** (if using Tailwind): `'./node_modules/@blario/vue/dist/**/*.{js,mjs,vue}'`
+4. **Tailwind preset** (if using Tailwind): Import preset from `@blario/vue/tailwind-preset`
+5. **Dark mode**: Ensure `darkMode: "class"` in Tailwind config (if using Tailwind)
+6. **Framework compatibility**: Works with Vuetify, PrimeVue, Quasar, Element Plus, or vanilla Vue
+
 ## Important Development Practices
 
-- Always use `pnpm` for package management
-- Run `pnpm build` before testing locally
+- Always use `pnpm` for package management (never npm or yarn)
+- Core package must build before framework packages (Turborepo handles this)
+- Run `pnpm build` at root before testing locally
 - Use `pnpm link` for local development testing
-- Test in the examples/nextjs-demo app before publishing
-- Maintain bundle size under 25KB
+- Test in example apps before publishing:
+  - `examples/nextjs-demo` for Next.js changes
+  - `examples/vue-demo` or `examples/vuetify-demo` for Vue changes
+- Maintain bundle size under 25KB per package
 - All new features should include tests
 - Follow accessibility best practices (WCAG 2.1 AA)

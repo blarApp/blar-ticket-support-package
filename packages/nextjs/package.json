@@ -114,6 +114,7 @@
     "@radix-ui/react-progress": "1.1.1",
     "@radix-ui/react-radio-group": "1.2.2",
     "@radix-ui/react-scroll-area": "1.2.2",
+    "@blario/core": "workspace:*",
     "@radix-ui/react-select": "2.1.4",
     "@radix-ui/react-separator": "1.1.1",
     "@radix-ui/react-slider": "1.2.2",
@@ -171,12 +172,10 @@
     "vitest": "^1.1.1",
     "zod": "^3.22.4"
   },
-  "size-limit": [
-    {
-      "path": "dist/index.mjs",
-      "limit": "70 kB"
-    }
-  ],
+  "size-limit": [{
+    "path": "dist/index.mjs",
+    "limit": "70 kB"
+  }],
   "publishConfig": {
     "access": "public"
   }

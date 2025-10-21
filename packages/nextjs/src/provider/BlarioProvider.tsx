@@ -1,5 +1,6 @@
 'use client';
 
+import { usePathname, useSearchParams } from 'next/navigation';
 import {
   createContext,
   useCallback,
@@ -10,7 +11,8 @@ import {
   useState,
   ReactNode,
 } from 'react';
-import { usePathname, useSearchParams } from 'next/navigation';
+import { getApiClient, resetApiClient } from '@blario/core';
+import { getCaptureManager, resetCaptureManager } from '@blario/core';
 import type {
   BlarioConfig,
   ChatHistoryMessage,
@@ -18,11 +20,9 @@ import type {
   TriageResponse,
   TriageSuggestedMeta,
   User,
-} from '../core/schemas';
-import { getCaptureManager, resetCaptureManager } from '../core/capture';
-import { getStorageManager, resetStorageManager } from '../core/storage';
-import { getApiClient, resetApiClient } from '../core/api';
-import { resetWebSocketManager } from '../core/websocket';
+} from '@blario/core';
+import { getStorageManager, resetStorageManager } from '@blario/core';
+import { resetWebSocketManager } from '@blario/core';
 import { cn } from '../ui/lib/utils';
 import '../styles/theme.css';
 import { IssueReporterModal } from '@/ui/IssueReporterModal';
