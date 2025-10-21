@@ -5,7 +5,7 @@ import {
   type ChatHistoryMessage,
   type IssueReportPayload,
   type TriageResponse,
-} from './schemas';
+} from '../schemas';
 
 export interface ApiClientConfig {
   apiBaseUrl: string;
