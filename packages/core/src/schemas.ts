@@ -136,6 +136,11 @@ export const ChatSessionSchema = z.object({
   updatedAt: z.number(),
 });
 
+// Helper types for function properties
+export type CustomRedactorFn = (input: string) => string;
+export type OnAfterSubmitFn = (issueId: string) => void;
+export type OnErrorFn = (error: Error) => void;
+
 export const BlarioConfigSchema = z.object({
   publishableKey: z.string(),
   apiBaseUrl: z.string().default('https://api.blar.io'),
@@ -155,14 +160,16 @@ export const BlarioConfigSchema = z.object({
   }).optional(),
   redaction: z.object({
     patterns: z.array(z.instanceof(RegExp)).optional(),
-    customRedactor: z.function().args(z.string()).returns(z.string()).optional(),
+    // Using z.custom for Zod v3/v4 compatibility
+    customRedactor: z.custom<CustomRedactorFn>((val) => typeof val === 'function').optional(),
   }).optional(),
   rateLimit: z.object({
     maxRequests: z.number().default(10),
     windowMs: z.number().default(60000),
   }).optional(),
-  onAfterSubmit: z.function().args(z.string()).returns(z.void()).optional(),
-  onError: z.function().args(z.instanceof(Error)).returns(z.void()).optional(),
+  // Using z.custom for Zod v3/v4 compatibility
+  onAfterSubmit: z.custom<OnAfterSubmitFn>((val) => typeof val === 'function').optional(),
+  onError: z.custom<OnErrorFn>((val) => typeof val === 'function').optional(),
 });
 
 export type User = z.infer<typeof UserSchema>;
