@@ -11,6 +11,8 @@ export default defineConfig({
     'react',
     'react-dom',
     'next',
+    'next/navigation',
+    'next/image',
     'tailwindcss',
     'tailwindcss-animate',
     'cmdk',

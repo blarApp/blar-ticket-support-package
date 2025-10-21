@@ -1,5 +1,17 @@
 # @blario/nextjs
 
+## 0.1.8
+
+### Patch Changes
+
+- remove unnecessary babel/core dependency
+
+## 0.1.7
+
+### Patch Changes
+
+- add babel-core dependency
+
 ## 0.1.2
 
 ### Patch Changes
