@@ -182,6 +182,6 @@
     "access": "public"
   },
   "dependencies": {
-    "core@7.27.7": "link:babel/core@7.27.7"
+    "@babel/core": "^7.27.7"
   }
 }
