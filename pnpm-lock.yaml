@@ -185,10 +185,6 @@ importers:
         version: 2.2.12(typescript@5.9.2)
 
   packages/core:
-    dependencies:
-      zod:
-        specifier: ^3.22.4
-        version: 3.25.76
     devDependencies:
       tsup:
         specifier: ^8.0.1
@@ -196,12 +192,11 @@ importers:
       typescript:
         specifier: ^5.3.3
         version: 5.9.2
+      zod:
+        specifier: ^3.22.4
+        version: 3.25.76
 
   packages/nextjs:
-    dependencies:
-      core@7.27.7:
-        specifier: link:babel/core@7.27.7
-        version: link:babel/core@7.27.7
     devDependencies:
       '@blario/core':
         specifier: workspace:*
