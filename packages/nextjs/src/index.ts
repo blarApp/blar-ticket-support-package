@@ -18,6 +18,9 @@ export type { IssueReporterButtonProps } from './ui/IssueReporterButton';
 export { IssueReporterModal } from './ui/IssueReporterModal';
 export type { IssueReporterModalProps } from './ui/IssueReporterModal';
 
+export { IssueReporterForm } from './ui/IssueReporterForm';
+export type { IssueReporterFormProps } from './ui/IssueReporterForm';
+
 export { DiagnosticBanner } from './ui/DiagnosticBanner';
 export type { DiagnosticBannerProps } from './ui/DiagnosticBanner';
 
