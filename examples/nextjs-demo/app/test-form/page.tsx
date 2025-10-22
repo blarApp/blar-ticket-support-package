@@ -1,10 +1,26 @@
 'use client';
 
 import React, { useState } from 'react';
-import { IssueReporterButton, IssueReporterForm } from '@blario/nextjs';
+import { IssueReporterButton, IssueReporterForm, useBlario } from '@blario/nextjs';
+import type { ChatHistoryMessage } from '@blario/core';
+
+const SAMPLE_CHAT: ChatHistoryMessage[] = [
+  { role: 'user', content: "The submit button on checkout isn't doing anything" },
+  { role: 'assistant', content: 'Do you see any error message or console output?' },
+  { role: 'user', content: 'No errors. I click submit and the form stays put.' },
+  { role: 'assistant', content: 'Can you check the browser console for any warnings?' },
+  { role: 'user', content: 'Just checked - no warnings either. The button just does nothing.' },
+];
 
 export default function TestForm() {
   const [showDirectForm, setShowDirectForm] = useState(false);
+  const [showStandaloneForm, setShowStandaloneForm] = useState(false);
+  const { generatePrefillFromMessages } = useBlario();
+
+  const handleShowStandaloneForm = () => {
+    setShowStandaloneForm(true);
+    generatePrefillFromMessages(SAMPLE_CHAT);
+  };
 
   return (
     <main className="min-h-screen p-8">
@@ -12,11 +28,11 @@ export default function TestForm() {
         <header className="space-y-2">
           <h1 className="text-3xl font-bold">Issue Reporter Form Examples</h1>
           <p className="text-gray-600 dark:text-gray-400">
-            Examples of using the IssueReporterModal and IssueReporterForm components.
+            Examples of using the IssueReporterModal and IssueReporterForm components, including standalone mode with AI triage.
           </p>
         </header>
 
-        <section className="grid gap-8 md:grid-cols-2">
+        <section className="grid gap-8 md:grid-cols-3">
           <div className="rounded-lg border p-6 space-y-4 bg-white dark:bg-gray-950/60">
             <div className="space-y-2">
               <h2 className="text-xl font-semibold">Option 1: Using the Modal</h2>
@@ -115,6 +131,60 @@ export default function TestForm() {
               </pre>
             </div>
           </div>
+
+          <div className="rounded-lg border p-6 space-y-4 bg-white dark:bg-gray-950/60">
+            <div className="space-y-2">
+              <h2 className="text-xl font-semibold">Option 3: Standalone with AI Triage</h2>
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                Use <code className="rounded bg-gray-100 dark:bg-gray-800 px-1 py-0.5 text-xs">IssueReporterForm</code> with <code className="rounded bg-gray-100 dark:bg-gray-800 px-1 py-0.5 text-xs">standalone</code> prop and AI prefill from chat history.
+              </p>
+            </div>
+
+            <div className="space-y-3 p-4 bg-gray-50 dark:bg-gray-900/50 rounded-md border flex flex-col min-h-60">
+              <p className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-2">Sample Chat:</p>
+              {SAMPLE_CHAT.map((msg, idx) => (
+                <div
+                  key={idx}
+                  className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                >
+                  <div
+                    className={`max-w-[80%] rounded-lg px-2 py-1 text-xs ${
+                      msg.role === 'user'
+                        ? 'bg-blue-600 text-white'
+                        : 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-gray-100'
+                    }`}
+                  >
+                    {msg.content}
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <button
+              onClick={handleShowStandaloneForm}
+              className="w-full bg-purple-600 text-white hover:bg-purple-700 px-4 py-3 rounded-lg font-medium"
+            >
+              {showStandaloneForm ? '✨ Form Shown Below' : '✨ Show Form with AI Prefill'}
+            </button>
+
+            <div className="text-xs text-gray-500 dark:text-gray-400 space-y-2">
+              <p className="font-semibold">Usage:</p>
+              <pre className="bg-gray-100 dark:bg-gray-800 p-3 rounded overflow-x-auto">
+{`import { IssueReporterForm, useBlario } from '@blario/nextjs';
+
+const { generatePrefillFromMessages } = useBlario();
+
+// Trigger AI triage
+generatePrefillFromMessages(chatMessages);
+
+// Form will auto-populate
+<IssueReporterForm
+  standalone={true}
+  onSuccess={(id) => console.log(id)}
+/>`}
+              </pre>
+            </div>
+          </div>
         </section>
 
         {showDirectForm && (
@@ -159,9 +229,47 @@ export default function TestForm() {
           </section>
         )}
 
+        {showStandaloneForm && (
+          <section className="rounded-lg border p-6 bg-purple-50 dark:bg-purple-900/20 border-purple-200 dark:border-purple-800 space-y-4">
+            <div className="space-y-2">
+              <h2 className="text-xl font-semibold text-purple-900 dark:text-purple-100">
+                Standalone Form with AI Triage
+              </h2>
+              <p className="text-sm text-purple-800 dark:text-purple-200">
+                This form is embedded directly and prefilled with AI-generated content from the chat history above. The <code className="rounded bg-purple-100 dark:bg-purple-800 px-1 py-0.5 text-xs">standalone</code> prop allows the form to work independently of the modal system.
+              </p>
+            </div>
+
+            <div className="rounded-lg border bg-white dark:bg-gray-950 overflow-hidden">
+              <div className="p-4 bg-purple-100 border-b border-purple-300 text-sm">
+                <strong className="text-purple-900">Features:</strong>
+                <ul className="list-disc list-inside mt-2 space-y-1 text-purple-800 text-xs">
+                  <li>Standalone mode: works without modal</li>
+                  <li>AI prefill from chat history</li>
+                  <li>Auto-populates summary, steps, severity, etc.</li>
+                  <li>Can be edited before submission</li>
+                  <li>No cancel button (optional)</li>
+                </ul>
+              </div>
+
+              <IssueReporterForm
+                standalone={true}
+                showCancelButton={false}
+                onSuccess={(issueId) => {
+                  alert(`Issue created successfully! ID: ${issueId}`);
+                  setShowStandaloneForm(false);
+                }}
+                onError={(error) => {
+                  alert(`Error creating issue: ${error.message}`);
+                }}
+              />
+            </div>
+          </section>
+        )}
+
         <section className="rounded-lg border p-6 bg-white dark:bg-gray-950/60 space-y-3 text-sm text-gray-600 dark:text-gray-400">
           <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Key Differences</h2>
-          <div className="grid md:grid-cols-2 gap-4">
+          <div className="grid md:grid-cols-3 gap-4">
             <div className="space-y-2">
               <h3 className="font-semibold text-gray-900 dark:text-gray-100">IssueReporterButton + Modal</h3>
               <ul className="list-disc pl-5 space-y-1">
@@ -170,6 +278,7 @@ export default function TestForm() {
                 <li>Closes automatically on success</li>
                 <li>Can be triggered from anywhere</li>
                 <li>Good for contextual issue reporting</li>
+                <li>Supports chatHistory prop for AI prefill</li>
               </ul>
             </div>
             <div className="space-y-2">
@@ -180,6 +289,17 @@ export default function TestForm() {
                 <li>Custom success handling</li>
                 <li>Part of page flow</li>
                 <li>Good for dedicated reporting pages</li>
+                <li>Requires modal to be open (default)</li>
+              </ul>
+            </div>
+            <div className="space-y-2">
+              <h3 className="font-semibold text-gray-900 dark:text-gray-100">IssueReporterForm (Standalone)</h3>
+              <ul className="list-disc pl-5 space-y-1">
+                <li>Works without modal system</li>
+                <li>Supports AI prefill via generatePrefillFromMessages()</li>
+                <li>Full control over layout</li>
+                <li>Perfect for chat-to-ticket flows</li>
+                <li>Set standalone=true prop</li>
               </ul>
             </div>
           </div>
