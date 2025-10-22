@@ -23,7 +23,6 @@ import type {
 } from '@blario/core';
 import { getStorageManager, resetStorageManager } from '@blario/core';
 import { resetWebSocketManager } from '@blario/core';
-import { cn } from '../ui/lib/utils';
 import '../styles/theme.css';
 import { IssueReporterModal } from '@/ui/IssueReporterModal';
 import { SupportChatModal } from '@/ui/SupportChatModal';
@@ -397,11 +396,9 @@ export function BlarioProvider({
 
   return (
     <BlarioContext.Provider value={value}>
-      <div className={cn("blario-wrapper", theme.mode === "dark" && "dark", theme.className)}>
-        {children}
-        <IssueReporterModal />
-        <SupportChatModal />
-      </div>
+      {children}
+      <IssueReporterModal />
+      <SupportChatModal />
     </BlarioContext.Provider>
   );
 }
