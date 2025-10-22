@@ -240,7 +240,7 @@ generatePrefillFromMessages(chatMessages);
               </p>
             </div>
 
-            <div className="rounded-lg border bg-white dark:bg-gray-950 overflow-hidden">
+            <div className="rounded-lg border bg-white dark:bg-gray-950 overflow-hidden max-w-2xl mx-auto">
               <div className="p-4 bg-purple-100 border-b border-purple-300 text-sm">
                 <strong className="text-purple-900">Features:</strong>
                 <ul className="list-disc list-inside mt-2 space-y-1 text-purple-800 text-xs">
@@ -248,21 +248,23 @@ generatePrefillFromMessages(chatMessages);
                   <li>AI prefill from chat history</li>
                   <li>Auto-populates summary, steps, severity, etc.</li>
                   <li>Can be edited before submission</li>
-                  <li>No cancel button (optional)</li>
+                  <li>Auto-scrollable with max-height</li>
                 </ul>
               </div>
 
-              <IssueReporterForm
-                standalone={true}
-                showCancelButton={false}
-                onSuccess={(issueId) => {
-                  alert(`Issue created successfully! ID: ${issueId}`);
-                  setShowStandaloneForm(false);
-                }}
-                onError={(error) => {
-                  alert(`Error creating issue: ${error.message}`);
-                }}
-              />
+              <div className="h-[600px]">
+                <IssueReporterForm
+                  standalone={true}
+                  showCancelButton={false}
+                  onSuccess={(issueId) => {
+                    alert(`Issue created successfully! ID: ${issueId}`);
+                    setShowStandaloneForm(false);
+                  }}
+                  onError={(error) => {
+                    alert(`Error creating issue: ${error.message}`);
+                  }}
+                />
+              </div>
             </div>
           </section>
         )}
