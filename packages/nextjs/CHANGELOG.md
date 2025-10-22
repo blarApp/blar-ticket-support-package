@@ -1,5 +1,11 @@
 # @blario/nextjs
 
+## 0.1.10
+
+### Patch Changes
+
+- enhance IssueReporterModal with focus management and prevent closing on interactions outside
+
 ## 0.1.8
 
 ### Patch Changes
