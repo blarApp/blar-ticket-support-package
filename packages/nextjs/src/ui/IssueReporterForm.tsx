@@ -21,6 +21,7 @@ export interface IssueReporterFormProps {
   onCancel?: () => void;
   showCancelButton?: boolean;
   className?: string;
+  standalone?: boolean;
 }
 
 export function IssueReporterForm({
@@ -29,6 +30,7 @@ export function IssueReporterForm({
   onCancel,
   showCancelButton = true,
   className,
+  standalone = false,
 }: IssueReporterFormProps) {
   const {
     submitIssueWithUploads,
@@ -61,7 +63,8 @@ export function IssueReporterForm({
   const [isCategoryEdited, setIsCategoryEdited] = useState(false);
 
   useEffect(() => {
-    if (isModalOpen) {
+    const isActive = isModalOpen || standalone;
+    if (isActive) {
       setSummary(triageData?.summary ?? '');
       setIsSummaryEdited(false);
       setSteps(triageData?.steps ?? '');
@@ -89,19 +92,21 @@ export function IssueReporterForm({
       setCategory('');
       setIsCategoryEdited(false);
     }
-  }, [isModalOpen, triageData, reporterOptions?.category]);
+  }, [isModalOpen, standalone, triageData, reporterOptions?.category]);
 
   useEffect(() => {
-    if (!isModalOpen) return;
+    const isActive = isModalOpen || standalone;
+    if (!isActive) return;
     if (isSummaryEdited) return;
 
     if (typeof triageData?.summary === 'string') {
       setSummary(triageData.summary);
     }
-  }, [triageData?.summary, isModalOpen, isSummaryEdited]);
+  }, [triageData?.summary, isModalOpen, standalone, isSummaryEdited]);
 
   useEffect(() => {
-    if (!isModalOpen) return;
+    const isActive = isModalOpen || standalone;
+    if (!isActive) return;
     if (!isStepsEdited && typeof triageData?.steps === 'string') {
       setSteps(triageData.steps);
     }
@@ -129,6 +134,7 @@ export function IssueReporterForm({
     }
   }, [
     isModalOpen,
+    standalone,
     isStepsEdited,
     isSeverityEdited,
     isCategoryEdited,
@@ -212,7 +218,8 @@ export function IssueReporterForm({
   const showGeneratedSummaryHint = Boolean(triageData?.summary) && !isSummaryEdited;
 
   useEffect(() => {
-    if (!isModalOpen || isGeneratingDescription) return;
+    const isActive = isModalOpen || standalone;
+    if (!isActive || isGeneratingDescription) return;
 
     const timeoutId = setTimeout(() => {
       const summaryInput = document.getElementById('summary') as HTMLInputElement | null;
@@ -222,7 +229,7 @@ export function IssueReporterForm({
     }, 200);
 
     return () => clearTimeout(timeoutId);
-  }, [isModalOpen, isGeneratingDescription]);
+  }, [isModalOpen, standalone, isGeneratingDescription]);
 
   return (
     <>
