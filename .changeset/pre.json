@@ -3,7 +3,7 @@
   "tag": "alpha",
   "initialVersions": {
     "@blario/core": "0.1.0-alpha.3",
-    "@blario/nextjs": "0.2.1-alpha.0",
+    "@blario/nextjs": "0.2.1-alpha.2",
     "@blario/vue": "0.1.0-alpha.6"
   },
   "changesets": [

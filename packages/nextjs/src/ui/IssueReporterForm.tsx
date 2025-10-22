@@ -233,7 +233,7 @@ export function IssueReporterForm({
 
   const formContent = (
     <>
-      <div className={`px-4 sm:px-6 pt-4 sm:pt-6 pb-4 relative ${standalone ? 'flex-1 overflow-y-auto' : 'overflow-y-auto flex-shrink-0'}`}>
+      <div className={`relative ${standalone ? 'flex-1 overflow-y-auto' : 'overflow-y-auto flex-shrink-0'}`}>
         {isGeneratingDescription && (
           <div className="absolute inset-0 bg-background/80 backdrop-blur-sm z-10 flex items-center justify-center">
             <div className="flex flex-col items-center gap-3">
@@ -244,6 +244,7 @@ export function IssueReporterForm({
         )}
 
         <form onSubmit={handleSubmit} className={className} id="issue-form">
+          <div className="px-4 sm:px-6 pt-4 sm:pt-6 pb-4">
           <div className="grid gap-3 sm:gap-4 grid-cols-[repeat(auto-fit,minmax(240px,1fr))] max-[500px]:grid-cols-1">
             <div className="col-span-full">
               <Label htmlFor="summary" className="text-xs sm:text-sm font-semibold flex items-center gap-2">
@@ -369,10 +370,9 @@ export function IssueReporterForm({
               {uploadError}
             </div>
           )}
-        </form>
-      </div>
+          </div>
 
-      <div className="px-4 sm:px-6 pb-3 sm:pb-4">
+          <div className="px-4 sm:px-6 pb-3 sm:pb-4">
         <div className="rounded-lg border p-2 sm:p-3">
           <div className="flex items-center justify-between mb-2">
             <Label className="text-xs sm:text-sm font-semibold">Attachments</Label>
@@ -436,6 +436,8 @@ export function IssueReporterForm({
             </p>
           )}
         </div>
+      </div>
+        </form>
       </div>
 
       <div className="flex justify-end gap-2 sm:gap-3 px-4 sm:px-6 pb-4 sm:pb-6 pt-2 flex-shrink-0">
