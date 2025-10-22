@@ -231,9 +231,9 @@ export function IssueReporterForm({
     return () => clearTimeout(timeoutId);
   }, [isModalOpen, standalone, isGeneratingDescription]);
 
-  return (
+  const formContent = (
     <>
-      <div className="overflow-y-auto px-4 sm:px-6 pt-4 sm:pt-6 pb-4 flex-shrink-0 relative">
+      <div className={`px-4 sm:px-6 pt-4 sm:pt-6 pb-4 relative ${standalone ? 'flex-1 overflow-y-auto' : 'overflow-y-auto flex-shrink-0'}`}>
         {isGeneratingDescription && (
           <div className="absolute inset-0 bg-background/80 backdrop-blur-sm z-10 flex items-center justify-center">
             <div className="flex flex-col items-center gap-3">
@@ -467,4 +467,14 @@ export function IssueReporterForm({
       </div>
     </>
   );
+
+  if (standalone) {
+    return (
+      <div className="flex flex-col h-full">
+        {formContent}
+      </div>
+    );
+  }
+
+  return formContent;
 }
