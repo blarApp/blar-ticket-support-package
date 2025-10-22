@@ -1,6 +1,6 @@
 {
   "name": "@blario/vue",
-  "version": "0.1.0-alpha.6",
+  "version": "0.1.0",
   "description": "Drop-in issue reporter for Vue applications with AI-powered diagnostics. Works with or without Tailwind CSS.",
   "author": "Blario",
   "license": "MIT",
@@ -79,7 +79,7 @@
     }
   },
   "dependencies": {
-    "@blario/core": "^0.1.0-alpha.2",
+    "@blario/core": "^0.1.0",
     "radix-vue": "^1.9.0",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",
@@ -114,10 +114,12 @@
     "vue-router": "^4.2.0",
     "vue-tsc": "^2.0.0"
   },
-  "size-limit": [{
-    "path": "dist/index.mjs",
-    "limit": "25 kB"
-  }],
+  "size-limit": [
+    {
+      "path": "dist/index.mjs",
+      "limit": "25 kB"
+    }
+  ],
   "publishConfig": {
     "access": "public"
   }

@@ -1,5 +1,11 @@
 # @blario/nextjs
 
+## 0.2.1
+
+### Patch Changes
+
+- 242ce1c: make standalone form properly scrollable within fixed-height containers
+
 ## 0.2.1-alpha.1
 
 ### Patch Changes
