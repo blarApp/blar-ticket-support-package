@@ -12,6 +12,7 @@ import { Paperclip, Loader2, Sparkles, X } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
+  DialogTitle,
 } from './components/dialog';
 import type { FormData } from '@blario/core';
 import { translations } from './translations';
@@ -221,10 +222,78 @@ export function IssueReporterModal({
 
   const showGeneratedSummaryHint = Boolean(triageData?.summary) && !isSummaryEdited;
 
+  // Single focus attempt after prefill completes - work WITH Radix's focus system
+  useEffect(() => {
+    if (!isModalOpen || isGeneratingDescription) return;
+    
+    // Single delayed focus to let Radix's FocusScope settle first
+    const timeoutId = setTimeout(() => {
+      const summaryInput = document.getElementById('summary') as HTMLInputElement | null;
+      if (summaryInput && document.activeElement !== summaryInput) {
+        summaryInput.focus();
+      }
+    }, 200);
+    
+    return () => clearTimeout(timeoutId);
+  }, [isModalOpen, isGeneratingDescription]);
+
+  const handleInteractOutside = React.useCallback((event: Event) => {
+    const target = (event.target as HTMLElement) ?? null;
+
+    if (!target) return;
+
+    // Prevent closing for call bubble
+    if (target.closest('[data-call-bubble="true"]')) {
+      event.preventDefault();
+      return;
+    }
+
+    // Prevent closing when interacting with nested dialogs (like Blario modal)
+    // Check if click is on another dialog or its overlay
+    if (
+      target.closest('[role="dialog"]') ||
+      target.closest('[data-radix-dialog-overlay]') ||
+      target.classList.contains('blario-wrapper')
+    ) {
+      event.preventDefault();
+    }
+  }, []);
+
+  // Handle pointer down outside to prevent outer dialog from blocking clicks
+  const handlePointerDownOutside = React.useCallback((event: Event) => {
+    const target = (event.target as HTMLElement) ?? null;
+    
+    if (!target) return;
+
+    // Allow clicks on call bubble elements
+    if (target.closest('[data-call-bubble="true"]')) {
+      event.preventDefault();
+      return;
+    }
+
+    // CRITICAL: Don't preventDefault for clicks inside our own dialog
+    // This allows inputs to receive focus even when nested inside another dialog
+    if (target.closest('.blario-wrapper')) {
+      // Allow the event to propagate to our inputs
+      return;
+    }
+
+    // For clicks outside our dialog, prevent closing
+    event.preventDefault();
+  }, []);
+
   return (
-    <div className="blario-wrapper">
-      <Dialog open={isModalOpen} onOpenChange={(open) => !open && handleCloseModal()}>
-        <DialogContent className="blario-wrapper max-w-3xl max-h-[90vh] flex flex-col p-0" showCloseButton={false}>
+    <Dialog open={isModalOpen} onOpenChange={(open) => !open && handleCloseModal()} modal={false}>
+      <DialogContent
+        className="blario-wrapper blario-issue-reporter max-w-3xl max-h-[90vh] flex flex-col p-0"
+        showCloseButton={false}
+        container={typeof document !== 'undefined' ? document.body : undefined}
+        onInteractOutside={handleInteractOutside}
+        onPointerDownOutside={handlePointerDownOutside}
+        style={{ zIndex: 10000, pointerEvents: 'auto' }}
+        data-blario-modal="true"
+      >
+        <DialogTitle className="sr-only">Report Issue</DialogTitle>
           {/* Form Section */}
           <div className="overflow-y-auto px-6 pt-6 pb-4 flex-shrink-0 relative">
             {/* Loading Overlay */}
@@ -467,6 +536,5 @@ export function IssueReporterModal({
           </div>
         </DialogContent>
       </Dialog>
-    </div>
   );
 }

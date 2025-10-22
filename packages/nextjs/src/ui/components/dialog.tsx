@@ -57,9 +57,10 @@ const DialogContent = React.forwardRef<
   React.ElementRef<typeof DialogPrimitive.Content>,
   React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content> & {
     showCloseButton?: boolean
+    container?: HTMLElement | null
   }
->(({ className, children, showCloseButton = true, style, ...props }, ref) => (
-    <DialogPortal data-slot="dialog-portal">
+>(({ className, children, showCloseButton = true, style, container, ...props }, ref) => (
+    <DialogPortal data-slot="dialog-portal" container={container}>
       <DialogOverlay />
       <DialogPrimitive.Content
         ref={ref}
@@ -82,6 +83,7 @@ const DialogContent = React.forwardRef<
           width: 'calc(100% - 2rem)',
           maxHeight: '90vh',
           overflowY: 'auto',
+          pointerEvents: 'auto',
           ...style
         }}
         {...props}
