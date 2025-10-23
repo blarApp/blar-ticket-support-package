@@ -19,7 +19,6 @@ import type {
   DiagnosticResponse,
   TriageResponse,
   TriageSuggestedMeta,
-  User,
 } from '@blario/core';
 import { getStorageManager, resetStorageManager } from '@blario/core';
 import '../styles/theme.css';
@@ -53,7 +52,7 @@ export interface BlarioContextValue {
   isSubmitting: boolean;
   submitIssue: (formData: any) => Promise<DiagnosticResponse | null>;
   clearDiagnostic: () => void;
-  user?: User;
+  reportBy?: string;
   locale: 'en' | 'es';
   isGeneratingDescription: boolean;
   generatePrefillFromMessages: (messages: ChatHistoryMessage[]) => void;
@@ -67,7 +66,7 @@ const BlarioContext = createContext<BlarioContextValue | null>(null);
 export interface BlarioProviderProps {
   publishableKey: string;
   apiBaseUrl?: string;
-  user?: User;
+  reportBy?: string;
   locale?: 'en' | 'es';
   capture?: {
     console?: boolean;
@@ -97,7 +96,7 @@ export interface BlarioProviderProps {
 export function BlarioProvider({
   publishableKey,
   apiBaseUrl = 'https://api.blar.io',
-  user,
+  reportBy,
   locale = 'en',
   capture = {},
   theme = {},
@@ -286,33 +285,44 @@ export function BlarioProvider({
       const captureManager = captureManagerRef.current;
       const apiClient = apiClientRef.current;
 
-      // Remove attachments from formData - they should NOT be sent as base64
-      // Attachments should be uploaded separately using signed URLs
-      const { attachments, ...formFields } = formData;
+      const { attachments, user, ...formFields } = formData;
 
-      const payload = {
+      const cleanedFormFields = Object.fromEntries(
+        Object.entries(formFields).filter(([_, value]) => value !== undefined)
+      );
+
+      const payload: any = {
         publishableKey,
-        user,
         meta: captureManager.getCaptureMeta(),
-        console: capture.console !== false ? captureManager.getConsoleLogs() : undefined,
-        network: capture.networkSample ? captureManager.getNetworkLogs() : undefined,
-        form: formFields,
-        // DO NOT include attachments in JSON payload - use signed URL upload instead
+        form: cleanedFormFields,
       };
+
+      if (user) payload.user = user;
+      if (reportBy) payload.reportBy = reportBy;
+      if (capture.console !== false) {
+        const consoleLogs = captureManager.getConsoleLogs();
+        if (consoleLogs && consoleLogs.length > 0) payload.console = consoleLogs;
+      }
+      if (capture.networkSample) {
+        const networkLogs = captureManager.getNetworkLogs();
+        if (networkLogs && networkLogs.length > 0) payload.network = networkLogs;
+      }
 
       const { issueId } = await apiClient.submitIssue(payload);
 
       onAfterSubmit?.(issueId);
 
-      // Return the issue ID so uploads can be attached
       return { issueId, status: 'pending' as const, diagnostic: undefined };
     } catch (error) {
+      console.error('Issue submission failed:', error);
+      if (error && typeof error === 'object' && 'data' in error) {
+        console.error('Validation errors:', JSON.stringify((error as any).data, null, 2));
+      }
       const err = error instanceof Error ? error : new Error('Failed to submit issue');
       onError?.(err);
       throw err;
     } finally {
       setIsSubmitting(false);
-      // Don't close reporter here - let the modal handle it after uploads
     }
   };
 
@@ -335,7 +345,7 @@ export function BlarioProvider({
     () => ({
       publishableKey,
       apiBaseUrl,
-      user,
+      reportBy,
       locale,
       capture: {
         console: capture.console ?? true,
@@ -360,7 +370,7 @@ export function BlarioProvider({
     [
       publishableKey,
       apiBaseUrl,
-      user,
+      reportBy,
       locale,
       capture,
       theme,
@@ -382,7 +392,7 @@ export function BlarioProvider({
     isSubmitting,
     submitIssue,
     clearDiagnostic,
-    user,
+    reportBy,
     locale,
     isGeneratingDescription,
     generatePrefillFromMessages,

@@ -16,12 +16,13 @@ const SEVERITY_OPTIONS = ['low', 'medium', 'high', 'critical'] as const;
 type SeverityOption = (typeof SEVERITY_OPTIONS)[number];
 
 export interface IssueReporterFormProps {
-  onSuccess?: (issueId: string) => void;
+  onSuccess?: () => void;
   onError?: (error: Error) => void;
   onCancel?: () => void;
   showCancelButton?: boolean;
   className?: string;
   standalone?: boolean;
+  user?: string;
 }
 
 export function IssueReporterForm({
@@ -31,6 +32,7 @@ export function IssueReporterForm({
   showCancelButton = true,
   className,
   standalone = false,
+  user,
 }: IssueReporterFormProps) {
   const {
     submitIssueWithUploads,
@@ -61,6 +63,8 @@ export function IssueReporterForm({
   const [isSeverityEdited, setIsSeverityEdited] = useState(false);
   const [category, setCategory] = useState('');
   const [isCategoryEdited, setIsCategoryEdited] = useState(false);
+  const [userContact, setUserContact] = useState(user || '');
+  const [additionalInfo, setAdditionalInfo] = useState('');
 
   useEffect(() => {
     const isActive = isModalOpen || standalone;
@@ -80,6 +84,8 @@ export function IssueReporterForm({
       setIsSeverityEdited(false);
       setCategory(reporterOptions?.category || triageData?.category || '');
       setIsCategoryEdited(false);
+      setUserContact(user || '');
+      setAdditionalInfo('');
     } else {
       setSummary('');
       setIsSummaryEdited(false);
@@ -91,8 +97,10 @@ export function IssueReporterForm({
       setIsSeverityEdited(false);
       setCategory('');
       setIsCategoryEdited(false);
+      setUserContact(user || '');
+      setAdditionalInfo('');
     }
-  }, [isModalOpen, standalone, triageData, reporterOptions?.category]);
+  }, [isModalOpen, standalone, triageData, reporterOptions?.category, user]);
 
   useEffect(() => {
     const isActive = isModalOpen || standalone;
@@ -187,25 +195,27 @@ export function IssueReporterForm({
       actual: actual || undefined,
       severity,
       category: category || undefined,
-    };
+      user: userContact || undefined,
+      additionalInfo: additionalInfo || undefined,
+    } as any;
 
     try {
-      const result = await submitIssueWithUploads(issueData, files);
+      await submitIssueWithUploads(issueData, files);
 
-      if (result?.issueId) {
-        onSuccess?.(result.issueId);
-        setFiles([]);
-        setSummary('');
-        setIsSummaryEdited(false);
-        setSteps('');
-        setIsStepsEdited(false);
-        setExpected('');
-        setActual('');
-        setSeverity(undefined);
-        setIsSeverityEdited(false);
-        setCategory('');
-        setIsCategoryEdited(false);
-      }
+      onSuccess?.();
+      setFiles([]);
+      setSummary('');
+      setIsSummaryEdited(false);
+      setSteps('');
+      setIsStepsEdited(false);
+      setExpected('');
+      setActual('');
+      setSeverity(undefined);
+      setIsSeverityEdited(false);
+      setCategory('');
+      setIsCategoryEdited(false);
+      setUserContact(user || '');
+      setAdditionalInfo('');
     } catch (error) {
       const err = error instanceof Error ? error : new Error('Failed to submit issue');
       onError?.(err);
@@ -331,7 +341,6 @@ export function IssueReporterForm({
                 className="mt-1.5 sm:mt-2 text-xs sm:text-sm"
               />
             </div>
-
             <div>
               <Label htmlFor="expected" className="text-xs sm:text-sm font-semibold">
                 {t.expected}
@@ -358,6 +367,35 @@ export function IssueReporterForm({
                 placeholder={t.actualPlaceholder}
                 value={actual}
                 onChange={(e) => setActual(e.target.value)}
+                rows={3}
+                disabled={isSubmitting || isUploading || isGeneratingDescription}
+                className="mt-1.5 sm:mt-2 text-xs sm:text-sm"
+              />
+            </div>
+            <div>
+              <Label htmlFor="userContact" className="text-xs sm:text-sm font-semibold">
+                {t.userContact}
+              </Label>
+              <Input
+                id="userContact"
+                name="userContact"
+                placeholder={t.userContactPlaceholder}
+                value={userContact}
+                onChange={(event) => setUserContact(event.target.value)}
+                disabled={isSubmitting || isUploading || isGeneratingDescription}
+                className="mt-1.5 sm:mt-2 text-xs sm:text-sm"
+              />
+            </div>
+            <div className="col-span-full">
+              <Label htmlFor="additionalInfo" className="text-xs sm:text-sm font-semibold">
+                {t.additionalInfo}
+              </Label>
+              <Textarea
+                id="additionalInfo"
+                name="additionalInfo"
+                placeholder={t.additionalInfoPlaceholder}
+                value={additionalInfo}
+                onChange={(e) => setAdditionalInfo(e.target.value)}
                 rows={3}
                 disabled={isSubmitting || isUploading || isGeneratingDescription}
                 className="mt-1.5 sm:mt-2 text-xs sm:text-sm"
