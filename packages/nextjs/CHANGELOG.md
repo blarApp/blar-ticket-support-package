@@ -1,10 +1,10 @@
 # @blario/nextjs
 
-## 1.0.1-alpha.0
+## 1.1.0
 
 ### Minor Changes
 
-- Add reportBy field to provider and payload instead of user object
+- Add reportBy field to provider and payload schema
 
 ## 1.0.0
 

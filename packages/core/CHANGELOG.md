@@ -1,9 +1,9 @@
 # @blario/core
 
-## 0.1.1-alpha.0
+## 0.2.0
 
 ### Minor Changes
 
-- Add reportBy field to IssueReportPayload and BlarioConfig schemas
+- Add reportBy field to provider and payload schema
 
 ## 0.1.0
