@@ -32,13 +32,9 @@ export function Providers({ children }: { children: React.ReactNode | React.Reac
   return (
     <BlarioProvider
       publishableKey={process.env.NEXT_PUBLIC_BLARIO_PUBLISHABLE_KEY!}
-      apiBaseUrl="http://127.0.0.1:8000"
+      apiBaseUrl="http://blar.local"
+      reportBy={"user"}
       locale="es"
-      user={{
-        id: 'demo-user-123',
-        email: 'demo@example.com',
-        name: 'Demo User'
-      }}
       capture={{
         console: true,
         networkSample: true,
@@ -48,10 +44,10 @@ export function Providers({ children }: { children: React.ReactNode | React.Reac
       theme={{
         mode: theme
       }}
-      onAfterSubmit={(issueId) => {
-        console.log('Issue submitted with ID:', issueId);
+      onAfterSubmit={() => {
+        console.log('Issue submitted');
       }}
-      onError={(error) => {
+      onError={(error: unknown) => {
         console.error('Blario error:', error);
       }}
     >

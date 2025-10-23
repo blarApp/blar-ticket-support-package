@@ -101,6 +101,8 @@ export class ApiClient {
   async submitIssue(payload: IssueReportPayload): Promise<{ issueId: string }> {
     const validation = IssueReportPayloadSchema.safeParse(payload);
     if (!validation.success) {
+      console.error('Validation errors:', JSON.stringify(validation.error.errors, null, 2));
+      console.error('Payload:', JSON.stringify(payload, null, 2));
       throw new ApiError('Invalid payload', 400, validation.error.errors);
     }
 

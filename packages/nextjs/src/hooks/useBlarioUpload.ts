@@ -1,9 +1,8 @@
 'use client';
 
+import { getUploadManager, getApiClient, type DiagnosticResponse, type FormData } from '@blario/core';
 import { useState, useCallback } from 'react';
 import { useBlarioContext } from '../provider/BlarioProvider';
-import { getUploadManager, getApiClient } from '@blario/core';
-import type { DiagnosticResponse, FormData } from '@blario/core';
 
 export interface UploadProgress {
   fileName: string;
@@ -30,7 +29,7 @@ export function useBlarioUpload(): UseBlarioUploadReturn {
   const [uploadError, setUploadError] = useState<string | null>(null);
 
   // This method is kept for standalone uploads but is not used in the normal flow
-  const uploadFiles = useCallback(async (files: File[]): Promise<string[]> => {
+  const uploadFiles = useCallback((files: File[]): Promise<string[]> => {
     setIsUploading(true);
     setUploadError(null);
     setUploadProgress(files.map(f => ({

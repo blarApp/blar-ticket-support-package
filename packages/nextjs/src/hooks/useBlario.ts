@@ -1,7 +1,7 @@
 'use client';
 
-import { useBlarioContext, type ReporterOpenOptions } from '../provider/BlarioProvider';
 import type { ChatHistoryMessage, DiagnosticResponse, FormData } from '@blario/core';
+import { useBlarioContext, type ReporterOpenOptions } from '../provider/BlarioProvider';
 
 export interface UseBlarioReturn {
   openReporter: (options?: ReporterOpenOptions) => void;
@@ -22,16 +22,12 @@ export function useBlario(): UseBlarioReturn {
     formData: FormData,
     attachments?: File[]
   ): Promise<DiagnosticResponse | null> => {
-    // Note: This hook maintains backward compatibility with base64 uploads
-    // For signed URL uploads, use useBlarioUpload hook instead
-
-    // For now, just submit without attachments in the JSON
-    // Attachments should be uploaded separately via signed URLs
     if (attachments && attachments.length > 0) {
       console.warn(
         'Attachments detected but not uploaded. Use useBlarioUpload() hook for file uploads via signed URLs.'
       );
     }
+    console.log('Reporting issue with formData:', formData, 'and attachments:', attachments);
 
     return context.submitIssue(formData);
   };

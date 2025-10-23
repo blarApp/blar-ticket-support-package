@@ -35,7 +35,6 @@ export function useSupportChat(options: UseSupportChatOptions = {}): UseSupportC
   const wsManagerRef = useRef(getWebSocketManager({
     baseUrl: config.apiBaseUrl,
     publishableKey: config.publishableKey,
-    userId: config.user?.id,
   }));
 
   const storageManager = useRef(getStorageManager());

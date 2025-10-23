@@ -1,11 +1,5 @@
 import { z } from 'zod';
 
-export const UserSchema = z.object({
-  id: z.string().optional(),
-  email: z.string().email().optional(),
-  name: z.string().optional(),
-});
-
 export const ViewportSchema = z.object({
   w: z.number(),
   h: z.number(),
@@ -45,6 +39,7 @@ export const FormDataSchema = z.object({
   actual: z.string().optional(),
   severity: z.enum(['low', 'medium', 'high', 'critical']).optional(),
   category: z.string().optional(),
+  additionalInfo: z.string().optional(),
 });
 
 export const ChatHistoryMessageSchema = z.object({
@@ -86,7 +81,8 @@ export const AttachmentSchema = z.object({
 
 export const IssueReportPayloadSchema = z.object({
   publishableKey: z.string(),
-  user: UserSchema.optional(),
+  user: z.string().optional(),
+  reportBy: z.string().optional(),
   meta: MetaSchema,
   console: z.array(ConsoleLogSchema).optional(),
   network: z.array(NetworkLogSchema).optional(),
@@ -144,7 +140,7 @@ export type OnErrorFn = (error: Error) => void;
 export const BlarioConfigSchema = z.object({
   publishableKey: z.string(),
   apiBaseUrl: z.string().default('https://api.blar.io'),
-  user: UserSchema.optional(),
+  reportBy: z.string().optional(),
   locale: z.enum(['en', 'es']).default('en'),
   capture: z.object({
     console: z.boolean().default(true),
@@ -172,7 +168,6 @@ export const BlarioConfigSchema = z.object({
   onError: z.custom<OnErrorFn>((val) => typeof val === 'function').optional(),
 });
 
-export type User = z.infer<typeof UserSchema>;
 export type Viewport = z.infer<typeof ViewportSchema>;
 export type Meta = z.infer<typeof MetaSchema>;
 export type ConsoleLog = z.infer<typeof ConsoleLogSchema>;

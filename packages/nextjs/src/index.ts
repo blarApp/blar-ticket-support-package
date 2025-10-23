@@ -56,7 +56,6 @@ export type {
 } from './tour/types';
 
 export type {
-  User,
   Viewport,
   Meta,
   ConsoleLog,

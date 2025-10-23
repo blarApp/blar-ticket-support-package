@@ -9,7 +9,7 @@ import {
 import { IssueReporterForm } from './IssueReporterForm';
 
 export interface IssueReporterModalProps {
-  onSuccess?: (issueId: string) => void;
+  onSuccess?: () => void;
   onError?: (error: Error) => void;
   className?: string;
 }
@@ -21,8 +21,8 @@ export function IssueReporterModal({
 }: IssueReporterModalProps) {
   const { isModalOpen, closeReporter } = useBlarioContext();
 
-  const handleSuccess = (issueId: string) => {
-    onSuccess?.(issueId);
+  const handleSuccess = () => {
+    onSuccess?.();
     closeReporter();
   };
 
