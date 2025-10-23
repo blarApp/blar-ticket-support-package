@@ -22,10 +22,8 @@ import type {
   User,
 } from '@blario/core';
 import { getStorageManager, resetStorageManager } from '@blario/core';
-import { resetWebSocketManager } from '@blario/core';
 import '../styles/theme.css';
 import { IssueReporterModal } from '@/ui/IssueReporterModal';
-import { SupportChatModal } from '@/ui/SupportChatModal';
 
 export interface ReporterOptions {
   category?: string;
@@ -180,7 +178,6 @@ export function BlarioProvider({
       resetCaptureManager();
       resetStorageManager();
       resetApiClient();
-      resetWebSocketManager();
     };
   }, []);
 
@@ -398,7 +395,6 @@ export function BlarioProvider({
     <BlarioContext.Provider value={value}>
       {children}
       <IssueReporterModal />
-      <SupportChatModal />
     </BlarioContext.Provider>
   );
 }
