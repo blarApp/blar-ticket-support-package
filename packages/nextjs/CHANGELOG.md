@@ -1,5 +1,11 @@
 # @blario/nextjs
 
+## 1.0.0
+
+### Major Changes
+
+- c8b16de: Remove SupportChatModal from BlarioProvider to prevent automatic WebSocket connections
+
 ## 0.2.1
 
 ### Patch Changes

@@ -1,6 +1,6 @@
 {
   "name": "@blario/nextjs",
-  "version": "0.2.2",
+  "version": "1.0.0",
   "description": "Drop-in issue reporter for Next.js applications with AI-powered diagnostics",
   "author": "Blario",
   "license": "MIT",
