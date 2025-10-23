@@ -1,6 +1,6 @@
 {
   "name": "@blario/core",
-  "version": "0.1.0",
+  "version": "0.1.1-alpha.0",
   "description": "Shared core logic for Blario SDKs",
   "author": "Blario",
   "license": "MIT",
