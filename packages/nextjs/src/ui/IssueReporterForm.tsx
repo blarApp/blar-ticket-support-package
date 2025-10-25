@@ -8,7 +8,7 @@ import { Input } from './components/input';
 import { Label } from './components/label';
 import { Textarea } from './components/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './components/select';
-import { Paperclip, Loader2, Sparkles, X } from 'lucide-react';
+import { Paperclip, Loader2, Sparkles, X, CheckCircle } from 'lucide-react';
 import type { FormData } from '@blario/core';
 import { translations } from './translations';
 
@@ -65,6 +65,7 @@ export function IssueReporterForm({
   const [isCategoryEdited, setIsCategoryEdited] = useState(false);
   const [userContact, setUserContact] = useState(user || '');
   const [additionalInfo, setAdditionalInfo] = useState('');
+  const [showSuccessAnimation, setShowSuccessAnimation] = useState(false);
 
   useEffect(() => {
     const isActive = isModalOpen || standalone;
@@ -184,6 +185,38 @@ export function IssueReporterForm({
     setFiles(prev => prev.filter((_, i) => i !== index));
   };
 
+  const handlePaste = async (event: React.ClipboardEvent<HTMLDivElement>) => {
+    const items = Array.from(event.clipboardData.items);
+    const MAX_FILES = 5;
+    const MAX_IMAGE_SIZE = 5 * 1024 * 1024;
+    const MAX_VIDEO_SIZE = 50 * 1024 * 1024;
+
+    const filePromises = items
+      .filter((item) => item.kind === 'file')
+      .map((item) => item.getAsFile())
+      .filter((file): file is File => file !== null);
+
+    const validFiles = filePromises.filter((file) => {
+      const isImage = file.type.startsWith('image/');
+      const isVideo = file.type.startsWith('video/');
+      if (!isImage && !isVideo) {
+        return false;
+      }
+
+      const maxSize = isVideo ? MAX_VIDEO_SIZE : MAX_IMAGE_SIZE;
+      if (file.size > maxSize) {
+        return false;
+      }
+
+      return true;
+    });
+
+    if (validFiles.length > 0) {
+      setFiles((prev) => [...prev, ...validFiles].slice(0, MAX_FILES));
+      clearUploadError();
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -202,20 +235,25 @@ export function IssueReporterForm({
     try {
       await submitIssueWithUploads(issueData, files);
 
-      onSuccess?.();
-      setFiles([]);
-      setSummary('');
-      setIsSummaryEdited(false);
-      setSteps('');
-      setIsStepsEdited(false);
-      setExpected('');
-      setActual('');
-      setSeverity(undefined);
-      setIsSeverityEdited(false);
-      setCategory('');
-      setIsCategoryEdited(false);
-      setUserContact(user || '');
-      setAdditionalInfo('');
+      setShowSuccessAnimation(true);
+
+      setTimeout(() => {
+        setShowSuccessAnimation(false);
+        setFiles([]);
+        setSummary('');
+        setIsSummaryEdited(false);
+        setSteps('');
+        setIsStepsEdited(false);
+        setExpected('');
+        setActual('');
+        setSeverity(undefined);
+        setIsSeverityEdited(false);
+        setCategory('');
+        setIsCategoryEdited(false);
+        setUserContact(user || '');
+        setAdditionalInfo('');
+        onSuccess?.();
+      }, 2000);
     } catch (error) {
       const err = error instanceof Error ? error : new Error('Failed to submit issue');
       onError?.(err);
@@ -241,7 +279,14 @@ export function IssueReporterForm({
     return () => clearTimeout(timeoutId);
   }, [isModalOpen, standalone, isGeneratingDescription]);
 
-  const formContent = (
+  const formContent = showSuccessAnimation ? (
+    <div className={`${standalone ? 'flex-1' : ''} flex items-center justify-center`}>
+      <div className="relative">
+        <div className="absolute inset-0 bg-green-500/20 rounded-full blur-xl animate-pulse" />
+        <CheckCircle className="relative h-16 w-16 sm:h-20 sm:w-20 text-green-500 animate-in zoom-in duration-500" />
+      </div>
+    </div>
+  ) : (
     <>
       <div className={`relative ${standalone ? 'flex-1 overflow-y-auto' : 'overflow-y-auto flex-shrink-0'}`}>
         {isGeneratingDescription && (
@@ -411,9 +456,15 @@ export function IssueReporterForm({
           </div>
 
           <div className="px-4 sm:px-6 pb-3 sm:pb-4">
-        <div className="rounded-lg border p-2 sm:p-3">
+        <div
+          className="rounded-lg border p-2 sm:p-3 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 cursor-pointer"
+          tabIndex={0}
+          onPaste={handlePaste}
+          role="region"
+          aria-label={t.attachments}
+        >
           <div className="flex items-center justify-between mb-2">
-            <Label className="text-xs sm:text-sm font-semibold">Attachments</Label>
+            <Label className="text-xs sm:text-sm font-semibold">{t.attachments}</Label>
             <Button
               type="button"
               size="sm"
@@ -470,7 +521,7 @@ export function IssueReporterForm({
             </div>
           ) : (
             <p className="text-[10px] sm:text-xs text-muted-foreground text-center py-2">
-              No files attached
+              {t.noFilesAttached}
             </p>
           )}
         </div>

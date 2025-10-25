@@ -40,6 +40,7 @@ const translationTemplate = {
   uploadingFiles: '',
   preparingUpload: '',
   required: '',
+  noFilesAttached: '',
 } as const;
 
 type Translation = { [Key in keyof typeof translationTemplate]: string };
@@ -84,6 +85,7 @@ const en: Translation = {
   uploadingFiles: 'Uploading Files...',
   preparingUpload: 'Preparing Upload...',
   required: '*',
+  noFilesAttached: 'No files attached',
 };
 
 const es: Translation = {
@@ -126,6 +128,7 @@ const es: Translation = {
   uploadingFiles: 'Subiendo Archivos...',
   preparingUpload: 'Preparando Subida...',
   required: '*',
+  noFilesAttached: 'No hay archivos adjuntos',
 };
 
 export const translations: Record<'en', Translation> & Record<'es', Translation> = {

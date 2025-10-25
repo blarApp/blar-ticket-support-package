@@ -1,0 +1,12 @@
+{
+  "mode": "pre",
+  "tag": "alpha",
+  "initialVersions": {
+    "@blario/core": "0.2.0",
+    "@blario/nextjs": "1.1.0",
+    "@blario/vue": "0.1.0"
+  },
+  "changesets": [
+    "attachments-improvements"
+  ]
+}

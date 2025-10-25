@@ -540,6 +540,93 @@ export default function Error({
 
 Full API documentation available at [docs.blar.io/nextjs](https://docs.blar.io/nextjs)
 
+## Publishing
+
+### Standard Release
+
+```bash
+# 1. Create a changeset (describes what changed)
+pnpm changeset
+
+# 2. Version the packages (updates package.json versions based on changesets)
+pnpm changeset:version
+
+# 3. Build all packages
+pnpm build
+
+# 4. Publish to npm
+pnpm changeset:publish
+
+# 5. Push to Git
+git push
+git push --tags
+```
+
+### Alpha/Pre-release Version
+
+```bash
+# 1. Enter pre-release mode (creates alpha versions)
+pnpm changeset pre enter alpha
+
+# 2. Create a changeset (as usual)
+pnpm changeset
+
+# 3. Version the packages (this will create alpha versions like 1.1.1-alpha.0)
+pnpm changeset:version
+
+# 4. Build all packages
+pnpm build
+
+# 5. Publish with the alpha tag
+pnpm changeset:publish --tag alpha
+
+# 6. Commit and push
+git add .
+git commit -m "chore: publish alpha version"
+git push
+git push --tags
+```
+
+#### Exit Pre-release Mode
+
+When ready for stable release:
+
+```bash
+# Exit pre-release mode
+pnpm changeset pre exit
+
+# Then follow normal versioning
+pnpm changeset:version
+pnpm build
+pnpm changeset:publish
+git push && git push --tags
+```
+
+#### Subsequent Alpha Releases
+
+If already in pre-release mode:
+
+```bash
+pnpm changeset              # Add changeset
+pnpm changeset:version      # Bump to next alpha (e.g., 1.1.1-alpha.1)
+pnpm build                  # Build packages
+pnpm changeset:publish --tag alpha
+git push && git push --tags
+```
+
+### Version Examples
+
+- Current: `1.1.0`
+- After entering pre-release and versioning: `1.2.0-alpha.0`
+- Next alpha: `1.2.0-alpha.1`
+- After exiting and versioning: `1.2.0` (stable)
+
+### What Each Command Does
+
+- **`pre enter alpha`**: All subsequent versions will be `x.x.x-alpha.0`, `x.x.x-alpha.1`, etc.
+- **`--tag alpha`**: Publishes to npm with the `alpha` tag (users install with `npm install @blario/nextjs@alpha`)
+- **`pre exit`**: Returns to normal versioning for stable releases
+
 ## Contributing
 
 See [CONTRIBUTING.md](https://github.com/blario/support-js/blob/main/CONTRIBUTING.md)
