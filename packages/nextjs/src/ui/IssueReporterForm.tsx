@@ -23,6 +23,7 @@ export interface IssueReporterFormProps {
   className?: string;
   standalone?: boolean;
   user?: string;
+  additionalInfo?: string;
 }
 
 export function IssueReporterForm({
@@ -33,6 +34,7 @@ export function IssueReporterForm({
   className,
   standalone = false,
   user,
+  additionalInfo: additionalInfoProp,
 }: IssueReporterFormProps) {
   const {
     submitIssueWithUploads,
@@ -64,7 +66,7 @@ export function IssueReporterForm({
   const [category, setCategory] = useState('');
   const [isCategoryEdited, setIsCategoryEdited] = useState(false);
   const [userContact, setUserContact] = useState(user || '');
-  const [additionalInfo, setAdditionalInfo] = useState('');
+  const [additionalInfo, setAdditionalInfo] = useState(additionalInfoProp || '');
   const [showSuccessAnimation, setShowSuccessAnimation] = useState(false);
 
   useEffect(() => {
@@ -86,7 +88,7 @@ export function IssueReporterForm({
       setCategory(reporterOptions?.category || triageData?.category || '');
       setIsCategoryEdited(false);
       setUserContact(user || '');
-      setAdditionalInfo('');
+      setAdditionalInfo(additionalInfoProp || '');
     } else {
       setSummary('');
       setIsSummaryEdited(false);
@@ -99,9 +101,9 @@ export function IssueReporterForm({
       setCategory('');
       setIsCategoryEdited(false);
       setUserContact(user || '');
-      setAdditionalInfo('');
+      setAdditionalInfo(additionalInfoProp || '');
     }
-  }, [isModalOpen, standalone, triageData, reporterOptions?.category, user]);
+  }, [isModalOpen, standalone, triageData, reporterOptions?.category, user, additionalInfoProp]);
 
   useEffect(() => {
     const isActive = isModalOpen || standalone;
@@ -251,7 +253,7 @@ export function IssueReporterForm({
         setCategory('');
         setIsCategoryEdited(false);
         setUserContact(user || '');
-        setAdditionalInfo('');
+        setAdditionalInfo(additionalInfoProp || '');
         onSuccess?.();
       }, 2000);
     } catch (error) {

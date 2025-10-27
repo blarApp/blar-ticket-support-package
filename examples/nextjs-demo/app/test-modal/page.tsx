@@ -51,11 +51,6 @@ export default function TestModal() {
             <IssueReporterButton
               variant="inline"
               category="performance"
-              prefill={{
-                summary: 'Performance issue on this page',
-                severity: 'medium',
-                steps: '1. Navigate to test-modal page\n2. Observe slow loading',
-              }}
               className="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded"
             >
               Report Performance Issue

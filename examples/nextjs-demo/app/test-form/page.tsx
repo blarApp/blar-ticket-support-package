@@ -1,8 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { IssueReporterButton, IssueReporterForm, useBlario } from '@blario/nextjs';
-import type { ChatHistoryMessage } from '@blario/core';
+import { IssueReporterButton, IssueReporterForm, useBlario, type ChatHistoryMessage } from '@blario/nextjs';
 
 const SAMPLE_CHAT: ChatHistoryMessage[] = [
   { role: 'user', content: "The submit button on checkout isn't doing anything" },
@@ -15,6 +14,7 @@ const SAMPLE_CHAT: ChatHistoryMessage[] = [
 export default function TestForm() {
   const [showDirectForm, setShowDirectForm] = useState(false);
   const [showStandaloneForm, setShowStandaloneForm] = useState(false);
+  const [showPrefilledForm, setShowPrefilledForm] = useState(false);
   const { generatePrefillFromMessages } = useBlario();
 
   const handleShowStandaloneForm = () => {
@@ -28,7 +28,7 @@ export default function TestForm() {
         <header className="space-y-2">
           <h1 className="text-3xl font-bold">Issue Reporter Form Examples</h1>
           <p className="text-gray-600 dark:text-gray-400">
-            Examples of using the IssueReporterModal and IssueReporterForm components, including standalone mode with AI triage.
+            Examples of using the IssueReporterModal and IssueReporterForm components, including standalone mode with AI triage and prefilled field props.
           </p>
         </header>
 
@@ -187,6 +187,93 @@ generatePrefillFromMessages(chatMessages);
           </div>
         </section>
 
+        <section className="rounded-lg border p-6 bg-white dark:bg-gray-950/60 space-y-4">
+          <div className="space-y-2">
+            <h2 className="text-xl font-semibold">Option 4: Prefilled User & Additional Info</h2>
+            <p className="text-sm text-gray-600 dark:text-gray-400">
+              Use <code className="rounded bg-gray-100 dark:bg-gray-800 px-1 py-0.5 text-xs">user</code> and <code className="rounded bg-gray-100 dark:bg-gray-800 px-1 py-0.5 text-xs">additionalInfo</code> props to prefill specific fields. Perfect when you know user context at render time.
+            </p>
+          </div>
+
+          <div className="space-y-3 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-md border">
+            <div className="space-y-2 text-sm">
+              <p className="font-medium text-blue-900 dark:text-blue-100">Example Context:</p>
+              <div className="grid grid-cols-2 gap-2 text-xs">
+                <div className="bg-white dark:bg-gray-900 p-2 rounded border">
+                  <span className="font-semibold text-gray-700 dark:text-gray-300">User:</span>
+                  <p className="text-gray-900 dark:text-gray-100 mt-1">john.doe@example.com</p>
+                </div>
+                <div className="bg-white dark:bg-gray-900 p-2 rounded border">
+                  <span className="font-semibold text-gray-700 dark:text-gray-300">Additional Info:</span>
+                  <p className="text-gray-900 dark:text-gray-100 mt-1">User was on checkout page, cart had 3 items</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <button
+            onClick={() => setShowPrefilledForm(!showPrefilledForm)}
+            className="w-full bg-indigo-600 text-white hover:bg-indigo-700 px-4 py-3 rounded-lg font-medium"
+          >
+            {showPrefilledForm ? '✕ Hide Form' : '✨ Show Prefilled Form'}
+          </button>
+
+          <div className="text-xs text-gray-500 dark:text-gray-400 space-y-2">
+            <p className="font-semibold">Usage:</p>
+            <pre className="bg-gray-100 dark:bg-gray-800 p-3 rounded overflow-x-auto">
+{`import { IssueReporterForm } from '@blario/nextjs';
+
+<IssueReporterForm
+  user="john.doe@example.com"
+  additionalInfo="User was on checkout page"
+  standalone={true}
+  showCancelButton={false}
+/>`}
+            </pre>
+          </div>
+        </section>
+
+        {showPrefilledForm && (
+          <section className="rounded-lg border p-6 bg-indigo-50 dark:bg-indigo-900/20 border-indigo-200 dark:border-indigo-800 space-y-4">
+            <div className="space-y-2">
+              <h2 className="text-xl font-semibold text-indigo-900 dark:text-indigo-100">
+                Prefilled Form Example
+              </h2>
+              <p className="text-sm text-indigo-800 dark:text-indigo-200">
+                The form below has the <strong>user</strong> and <strong>additionalInfo</strong> fields prefilled. These values are set via props and persist after form submission.
+              </p>
+            </div>
+
+            <div className="rounded-lg border bg-white dark:bg-gray-950 overflow-hidden max-w-2xl mx-auto">
+              <div className="p-4 bg-indigo-100 border-b border-indigo-300 text-sm">
+                <strong className="text-indigo-900">Prefilled Fields:</strong>
+                <ul className="list-disc list-inside mt-2 space-y-1 text-indigo-800 text-xs">
+                  <li>User Contact: john.doe@example.com</li>
+                  <li>Additional Info: User was on checkout page, cart had 3 items, attempted payment with Visa ending in 4242</li>
+                  <li>Values persist after submission</li>
+                  <li>User can still edit the fields</li>
+                  <li>Works with standalone mode</li>
+                </ul>
+              </div>
+
+              <div className="h-[600px]">
+                <IssueReporterForm
+                  user="john.doe@example.com"
+                  additionalInfo="User was on checkout page, cart had 3 items, attempted payment with Visa ending in 4242"
+                  standalone={true}
+                  showCancelButton={false}
+                  onSuccess={() => {
+                    console.log('Issue submitted with prefilled data');
+                  }}
+                  onError={(error) => {
+                    console.error(`Error creating issue: ${error.message}`);
+                  }}
+                />
+              </div>
+            </div>
+          </section>
+        )}
+
         {showDirectForm && (
           <section className="rounded-lg border p-6 bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800 space-y-4">
             <div className="space-y-2">
@@ -215,12 +302,8 @@ generatePrefillFromMessages(chatMessages);
                 <div className="flex-1 overflow-auto">
                   <IssueReporterForm
                     showCancelButton={false}
-                    onSuccess={(issueId) => {
-                      alert(`Issue created successfully! ID: ${issueId}`);
+                    onSuccess={() => {
                       setShowDirectForm(false);
-                    }}
-                    onError={(error) => {
-                      alert(`Error creating issue: ${error.message}`);
                     }}
                   />
                 </div>
@@ -256,12 +339,11 @@ generatePrefillFromMessages(chatMessages);
                 <IssueReporterForm
                   standalone={true}
                   showCancelButton={false}
-                  onSuccess={(issueId) => {
-                    alert(`Issue created successfully! ID: ${issueId}`);
+                  onSuccess={() => {
                     setShowStandaloneForm(false);
                   }}
                   onError={(error) => {
-                    alert(`Error creating issue: ${error.message}`);
+                    console.error(`Error creating issue: ${error.message}`);
                   }}
                 />
               </div>
@@ -271,7 +353,7 @@ generatePrefillFromMessages(chatMessages);
 
         <section className="rounded-lg border p-6 bg-white dark:bg-gray-950/60 space-y-3 text-sm text-gray-600 dark:text-gray-400">
           <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Key Differences</h2>
-          <div className="grid md:grid-cols-3 gap-4">
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
             <div className="space-y-2">
               <h3 className="font-semibold text-gray-900 dark:text-gray-100">IssueReporterButton + Modal</h3>
               <ul className="list-disc pl-5 space-y-1">
@@ -302,6 +384,17 @@ generatePrefillFromMessages(chatMessages);
                 <li>Full control over layout</li>
                 <li>Perfect for chat-to-ticket flows</li>
                 <li>Set standalone=true prop</li>
+              </ul>
+            </div>
+            <div className="space-y-2">
+              <h3 className="font-semibold text-gray-900 dark:text-gray-100">Prefilled Props</h3>
+              <ul className="list-disc pl-5 space-y-1">
+                <li>Prefill user and additionalInfo fields</li>
+                <li>Set via component props</li>
+                <li>Values persist after submission</li>
+                <li>User can still edit prefilled values</li>
+                <li>Perfect when context is known at render time</li>
+                <li>Works with standalone mode</li>
               </ul>
             </div>
           </div>
