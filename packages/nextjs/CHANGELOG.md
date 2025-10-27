@@ -1,5 +1,11 @@
 # @blario/nextjs
 
+## 1.1.1
+
+### Patch Changes
+
+- 41d33f4: Add Spanish translations for attachments section, clipboard paste functionality for attachments, and success animation after report submission
+
 ## 1.1.1-alpha.0
 
 ### Patch Changes
