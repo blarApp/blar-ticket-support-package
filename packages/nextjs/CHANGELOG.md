@@ -1,5 +1,11 @@
 # @blario/nextjs
 
+## 1.2.0
+
+### Minor Changes
+
+- add additionalInfo prop to IssueReporterForm for prefilling form field
+
 ## 1.1.1
 
 ### Patch Changes
